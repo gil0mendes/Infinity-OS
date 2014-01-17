@@ -1,0 +1,83 @@
+#
+# Copyright (c) 2012 DesingTure. All rights reserved.
+# 
+# This file contains the original code and/or modify of original code as
+# defined in.
+# All code in this file is property of DesignTure project, this code should
+# not be distributed or commercialized.
+# Only those involved in this project will have access to the code and no one
+# else can see.
+#
+
+mainmenu "LAOS Configuration"
+
+####################
+menu "Build options"
+####################
+
+config TOOLCHAIN_DIR
+        string "Toolchain directory"
+        default "/please/change/me"
+        help
+            Path to directory to store toolchain downloads and build in.
+
+config TOOLCHAIN_MAKE_JOBS
+        int "Toolchain parallel build jobs"
+        default 1
+        help
+            Argument to pass to -j for make when building the toolchain.
+
+config EXTRA_CCFLAGS
+        string "Extra CCFLAGS"
+        default "-O2"
+        help
+            Extra compiler options for both C and C++ code.
+
+config EXTRA_CFLAGS
+        string "Extra CFLAGS"
+        default ""
+        help
+            Extra compiler options for C code.
+
+config EXTRA_CXXFLAGS
+        string "Extra CXXFLAGS"
+        default ""
+        help
+            Extra compiler options for C++ code.
+
+config QEMU_BINARY
+	string "QEMU binary"
+	default "qemu-system-x86_64"
+	help
+	  Path to the QEMU binary to use for the qtest build target.
+
+config QEMU_OPTS
+	string "Extra QEMU options"
+	default "-serial stdio -vga std -s -localtime -m 512"
+	help
+	  Extra options to pass to QEMU.
+
+#######
+endmenu
+#######
+
+comment "Target system "
+
+source "config/Kconfig.arch"
+source "config/Kconfig.platform"
+
+comment "System configuration"
+
+config DEBUG
+	bool "Debug build"
+	default y
+	help
+	  Enable various sections of debugging code and extra checks. For the
+	  kernel, this enables assertions and messages with the LOG_DEBUG log
+	  level. It also disables the boot splash screen by default. The built
+	  system will generally be slower, so don't enable it unless you are
+	  doing kernel development or have another reason to.
+
+menu "LAOS configuration"
+source "source/loader/Kconfig"
+endmenu

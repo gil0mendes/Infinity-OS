@@ -192,4 +192,5 @@ SConscript('source/SConscript', variant_dir = os.path.join('build',
 # Now that we have information of all libraries, update the toolchain sysroot.
 toolchain.update_sysroot(manager)
 
+
 # EOF

@@ -1,0 +1,93 @@
+#
+# Copyright (C) 2012-2013 Gil Mendes
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+Import('config', 'manager')
+
+# Generate the configuration header. We don't generate with Kconfig because its
+# too much of a pain to get SCons to do it properly.
+f = open('config.h', 'w')
+f.write('/* This file is automatically-generated, do not edit. */\n\n')
+for (k, v) in config.items():
+	if isinstance(v, str):
+		f.write("#define CONFIG_%s \"%s\"\n" % (k, v))
+	elif isinstance(v, bool) or isinstance(v, int):
+		f.write("#define CONFIG_%s %d\n" % (k, int(v)))
+	else:
+		raise Exception, "Unsupported type %s in config" % (type(v))
+f.close()
+
+dist = manager['dist']
+
+##############
+# LAOS build #
+##############
+
+# Create the build environment for the bootloader.
+env = manager.CreateBare(name = 'boot', flags = {
+    'LIBS': [],
+    'CCFLAGS': [ '-nostdlib', '-nostdinc', '-ffreestanding', '-fno-stack-protector'],
+    'ASFLAGS': ['-nostdinc'],
+    'LINKFLAGS': ['-nostdlib'],
+})
+
+# Override any optimisation level specified, we want to optimise for size.
+env['CCFLAGS'] = filter(lambda f: f[0:2] != '-O', env['CCFLAGS']) + ['-Os']
+
+# Add the compiler include directory for some standard headers.
+from subprocess import Popen, PIPE
+incdir = Popen([env['CC'], '-print-file-name=include'], stdout = PIPE).communicate()[0].strip()
+env['CCFLAGS'] += ['-isystem', incdir]
+env['ASFLAGS'] += ['-isystem', incdir]
+
+# Build the bootloader.
+defaults = []
+SConscript(dirs = ['boot'], exports = ['env', 'defaults'])
+for t in defaults:
+    if t[0].name != 'loader':
+        Depends(File('boot/loader'), t)
+
+# Put stuff into the distribution environment.
+dist['LOADER'] = File('boot/loader')
+if config['PLATFORM'] == 'pc':
+    dist['CDBOOT'] = File('boot/platform/pc/stage1/cdboot')
+
+###############
+# Image build #
+###############
+
+# Always build the filesystem image to make sure new stuff is copied into it
+fsimage = dist.FSImage('fsimage.tar', [])
+AlwaysBuild(fsimage)
+
+# Add aliases and set the default target
+Alias('loader', dist['LOADER'])
+Alias('fsimage', fsimage)
+
+# Add platform-specific target to generate bootable images
+if config['PLATFORM'] == 'pc':
+	Default(Alias('cdrom', dist.ISOImage('cdrom.iso', fsimage)))
+
+	# Target to run in QEMU
+	Alias('qemu', dist.Command('__quemu', ['cdrom.iso'], Action(config['QEMU_BINARY'] + ' -cdrom $SOURCE -boot d ' + config['QEMU_OPTS'], None)))
+else:
+	Default(dist['LOADER'])
+
+#EOF

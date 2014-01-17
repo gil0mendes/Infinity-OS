@@ -106,4 +106,8 @@ config DEBUG
 		system will generally be slower, so don't enable it unless you are
 		doing kernel development or have another reason to.
 
+menu "LAOS configuration"
+source "source/boot/Kconfig"
+endmenu
+
 # EOF

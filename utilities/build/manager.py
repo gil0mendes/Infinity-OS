@@ -198,8 +198,8 @@ class BuildManager:
 		env.Append(PROGEMITTER = [add_library_deps])
 
 		# Add the application/library builders.
-		env.AddMethod(builders.kiwi_application_method, 'KiwiApplication')
-		env.AddMethod(builders.kiwi_library_method, 'KiwiLibrary')
+		env.AddMethod(builders.infi_application_method, 'InfiApplication')
+		env.AddMethod(builders.infi_library_method, 'InfiLibrary')
 
 		self.envs.append((name, env))
 		return env

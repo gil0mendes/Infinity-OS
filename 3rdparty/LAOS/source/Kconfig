@@ -1,0 +1,108 @@
+#
+# Copyright (C) 2012-2013 Gil Mendes
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+config LAOS_UI
+	bool "Menu/configuration interface"
+	default y
+	depends on LAOS_HAVE_UI
+	help
+	  Enable the user interface. If disabled, the menu interface is disabled
+	  so configuration files will not support multiple entries. The system
+	  must be loaded at the top level of the config file.
+
+#########################
+menu "Filesystem support"
+	depends on LAOS_HAVE_DISK
+#########################
+
+config LAOS_FS_EXT2
+	bool "Ext2/3/4 filesystem"
+	default y
+	help
+	  Enable support for booting from Ext2/3/4 filesystems.
+
+config LAOS_FS_ISO9660
+	bool "ISO9660 CDROM filesystem"
+	default y
+	help
+	  Enable support for booting from ISO9660-formatted CDs.
+
+config LAOS_FS_ZLIB
+	bool "File decompression support"
+	default y
+	help
+	  Enable support for reading compressed files via zlib.
+
+#######
+endmenu
+#######
+
+############################
+menu "Partition map support"
+	depends on LAOS_HAVE_DISK
+############################
+
+config LAOS_PARTITION_MAP_MSDOS
+	bool "MS-DOS (MBR) partition support"
+	default y
+	help
+	  Enable support for MS-DOS/MBR partition tables. You probably want
+	  this.
+
+#######
+endmenu
+#######
+
+###############################
+menu "Operating system support"
+###############################
+
+config LAOS_LOADER_LAOS
+	bool "LAOS kernel support"
+	default y
+	depends on LAOS_HAVE_LOADER_LAOS32 || LAOS_HAVE_LOADER_LAOS64
+	help
+	  Enable support for loading kernels using the LAOS boot format.
+
+config LAOS_LOADER_LINUX
+	bool "Linux kernel support"
+	default y
+	depends on LAOS_HAVE_LOADER_LINUX
+	help
+	  Enable support for loading Linux kernels.
+
+#######
+endmenu
+#######
+
+if ARCH_ARM
+source "arch/arm/Kconfig"
+endif
+if ARCH_X86
+source "arch/x86/Kconfig"
+endif
+
+if PLATFORM_OMAP3
+source "platform/omap3/Kconfig"
+endif
+if PLATFORM_PC
+source "platform/pc/Kconfig"
+endif

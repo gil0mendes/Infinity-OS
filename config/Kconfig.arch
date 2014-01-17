@@ -37,6 +37,12 @@ config TOOLCHAIN_LLVM
 config TOOLCHAIN_GCC
 	bool
 
+# For LAOS compatibility.
+config ARCH_X86
+	bool
+	select LITTLE_ENDIAN
+	select TOOLCHAIN_LLVM
+
 choice
 	prompt "Architecture"
 	default ARCH_AMD64
@@ -44,8 +50,7 @@ choice
 config ARCH_AMD64
 	bool "AMD64"
 	select ARCH_64BIT
-	select LITTLE_ENDIAN
-	select TOOLCHAIN_LLVM
+	select ARCH_X86
 	help
 	  Target the built system to 64-bit x86 processors.
 

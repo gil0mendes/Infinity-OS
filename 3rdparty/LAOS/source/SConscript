@@ -1,0 +1,92 @@
+#
+# Copyright (C) 2012-2013 Gil Mendes
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+Import('env', 'config', 'defaults')
+from util import FeatureSources
+
+# List of our own sources.
+sources = FeatureSources(config, [
+    ('LAOS_FS_ZLIB', 'fs/decompress.c'),
+    ('LAOS_FS_EXT2', 'fs/ext2.c'),
+    ('LAOS_FS_ISO9660', 'fs/iso9660.c'),
+    ('!LAOS_HAVE_DISK', 'fs/tar.c'),
+
+    ('LAOS_FS_ZLIB', 'lib/zlib/adler32.c'),
+    ('LAOS_FS_ZLIB', 'lib/zlib/crc32.c'),
+    ('LAOS_FS_ZLIB', 'lib/zlib/inffast.c'),
+    ('LAOS_FS_ZLIB', 'lib/zlib/inflate.c'),
+    ('LAOS_FS_ZLIB', 'lib/zlib/inftrees.c'),
+    ('LAOS_FS_ZLIB', 'lib/zlib/zutil.c'),
+
+    'lib/allocator.c',
+    'lib/printf.c',
+    'lib/string.c',
+
+    ('LAOS_LOADER_LAOS',  'loaders/laos.c'),
+    ('LAOS_LOADER_LAOS',  'loaders/laos_elf.c'),
+    ('LAOS_LOADER_LINUX', 'loaders/linux.c'),
+
+    ('LAOS_PARTITION_MAP_MSDOS', 'partitions/msdos.c'),
+
+    'config.c',
+    'console.c',
+    'device.c',
+    ('LAOS_HAVE_DISK', 'disk.c'),
+    'error.c',
+    'fs.c',
+    'main.c',
+    'memory.c',
+    ('LAOS_UI', 'menu.c'),
+    ('LAOS_UI', 'ui.c'),
+])
+
+# Set the include search paths (done here so it points to the build directory,
+# not the source tree).
+env['CPPPATH'] = [
+    Dir('include'),
+    Dir('arch/%s/include' % (config['BOOTARCH'])),
+    Dir('platform/%s/include' % (config['PLATFORM'])),
+    Dir('platform/generic'),
+]
+env['CCFLAGS'] += ['-include', 'build/%s-%s/config.h' % (config['ARCH'], config['PLATFORM'])]
+env['ASFLAGS'] += ['-include', 'build/%s-%s/config.h' % (config['ARCH'], config['PLATFORM'])]
+
+# Get the list of source files from the architecture/platform.
+arch_sources = SConscript(dirs = ['arch/' + config['BOOTARCH']], exports = ['env', 'defaults'])
+platform_sources = SConscript(dirs = ['platform/' + config['PLATFORM']], exports = ['env', 'defaults'])
+sources = arch_sources + platform_sources + sources
+
+# Link the bootloader.
+env.Program('loader.elf', map(env.Object, sources), LINKFLAGS = env['LINKFLAGS'] + [
+    '-Wl,-T,$LDSCRIPT',
+    '-Wl,--build-id=none',
+    '-Wl,-Map,${TARGET.dir}/loader.map',
+])
+Depends('loader.elf', env['LDSCRIPT'])
+
+# Generate various information files and the stripped boot loader image.
+target = env.Command(['loader', 'loader.lst', 'loader.rde', 'loader.sym'], 'loader.elf', [
+    Action('$OBJCOPY -O binary --strip-all $SOURCE ${TARGETS[0]}', '$GENCOMSTR'),
+    Action('$OBJDUMP -d $SOURCE > ${TARGETS[1]}', None),
+    Action('$READELF -a $SOURCE > ${TARGETS[2]}', None),
+    Action('$NM -C $SOURCE | sort > ${TARGETS[3]}', None),
+])
+defaults.append(target)

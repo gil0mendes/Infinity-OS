@@ -83,7 +83,7 @@ def iso_image_func(target, source, env):
 
 	fsimage = str(source[-1])
 	cdboot = str(env['CDBOOT'])
-	#loader = str(env['LOADER'])
+	loader = str(env['LOADER'])
 	#kernel = str(env['KERNEL'])
 
 	# Create the work directory.
@@ -94,8 +94,8 @@ def iso_image_func(target, source, env):
 	# Copy stuff into it.
 	#shutil.copy(kernel, os.path.join(tmpdir, 'infi'))
 	shutil.copy(fsimage, os.path.join(tmpdir, 'infi', 'modules'))
-	for mod in env['MODULES']:
-		shutil.copy(str(mod), os.path.join(tmpdir, 'infi', 'modules'))
+	#for mod in env['MODULES']:
+	#	shutil.copy(str(mod), os.path.join(tmpdir, 'infi', 'modules'))
 
 	# Write the configuration.
 	f = open(os.path.join(tmpdir, 'boot', 'loader.cfg'), 'w')
@@ -111,12 +111,12 @@ def iso_image_func(target, source, env):
 	# together.
 	f = open(os.path.join(tmpdir, 'boot', 'cdboot.img'), 'w')
 	f.write(open(cdboot, 'r').read())
-	#f.write(open(loader, 'r').read())
+	f.write(open(loader, 'r').read())
 	f.close()
 
 	# Create the ISO.
 	verbose = (ARGUMENTS.get('V') == '1') and '' or '>> /dev/null 2>&1'
-	if os.system('mkisofs -J -R -l -b boot/cdboot.img -V "Kiwi CDROM" ' + \
+	if os.system('mkisofs -J -R -l -b boot/cdboot.img -V "Infi CDROM" ' + \
 			'-boot-load-size 4 -boot-info-table -no-emul-boot ' + \
 			'-o %s %s %s' % (target[0], tmpdir, verbose)) != 0:
 		print "Could not find mkisofs! Please ensure that it is installed."
@@ -129,7 +129,7 @@ def iso_image_func(target, source, env):
 def iso_image_emitter(target, source, env):
 	assert len(source) == 1
 	#return (target, [env['KERNEL'], env['LOADER'], env['CDBOOT']] + env['MODULES'] + source)
-	return (target, [env['CDBOOT']] + env['MODULES'] + source)
+	return (target, [env['LOADER'], env['CDBOOT']] + source)
 iso_image_builder = Builder(action = Action(iso_image_func, '$GENCOMSTR'), emitter = iso_image_emitter)
 
 #EOF

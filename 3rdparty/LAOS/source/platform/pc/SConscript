@@ -1,0 +1,62 @@
+#
+# Copyright (C) 2012-2013 Gil Mendes
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+Import('env', 'defaults', 'config')
+from util import FeatureSources
+
+sources = FeatureSources(config, [
+    'loaders/chainload.c',
+    'loaders/enter.S',
+    ('LAOS_LOADER_LAOS', 'loaders/laos.c'),
+    ('LAOS_LOADER_LINUX', 'loaders/linux.c'),
+
+    'bios.S',
+    'console.c',
+    'disk.c',
+    'memory.c',
+    'multiboot.c',
+    'platform.c',
+    'pxe.c',
+    'start.S',
+    'vbe.c',
+])
+
+# Build the stage 1 loaders.
+stage1s = ['cdboot', 'pxeboot']
+if config['LAOS_FS_EXT2']:
+    stage1s += ['ext2boot']
+for f in stage1s:
+    env.Program('stage1/%s.elf' % (f), 'stage1/%s.S' % (f), LIBS = [], LINKFLAGS = env['LINKFLAGS'] + [
+        '-Wl,-T,${SOURCE.srcdir}/stage1.ld',
+        '-Wl,-N',
+        '-Wl,--build-id=none',
+    ])
+    Depends('stage1/%s.elf' % (f), File('stage1/stage1.ld'))
+    target = env.Command('stage1/%s' % (f), 'stage1/%s.elf' % (f), [
+        Action("$OBJCOPY -O binary --strip-all -R '.note.*' -R .comment $SOURCE $TARGET", '$GENCOMSTR'),
+        Action('$OBJDUMP -d -m i386 -M i8086 $SOURCE > ${TARGET}.lst', None),
+    ])
+    defaults.append(target)
+
+# Set the linker script path.
+env['LDSCRIPT'] = env.LDScript('link.ld', 'link.ld.in')
+
+Return('sources')

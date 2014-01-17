@@ -1,0 +1,48 @@
+#
+# Copyright (c) 2012 DesingTure. All rights reserved.
+# 
+# This file contains the original code and/or modify of original code as
+# defined in.
+# All code in this file is property of DesignTure project, this code should
+# not be distributed or commercialized.
+# Only those involved in this project will have access to the code and no one
+# else can see.
+#
+
+Import('config', 'envmgr')
+import glob, os, tempfile, shutil, sys
+
+# Generate the configuration header. We don't generate with Kconfig because its
+# too much of a pain to get SCons to do it properly.
+f = open('config.h', 'w')
+f.write('/* This file is automatically-generated, do not edit. */\n\n')
+for (k, v) in config.items():
+	if isinstance(v, str):
+		f.write("#define CONFIG_%s \"%s\"\n" % (k, v))
+	elif isinstance(v, bool) or isinstance(v, int):
+		f.write("#define CONFIG_%s %d\n" % (k, int(v)))
+	else:
+		raise Exception, "Unsupported type %s in config" % (type(v))
+f.close()
+
+# Create the distribution environment.
+dist = envmgr.Create('dist', {})
+
+# Visit subdirectories.
+SConscript(dirs = ['source'])
+
+# Add aliases and set the default target.
+Alias('loader', dist['LOADER'])
+
+# Add platform-specific targets to generate bootable images.
+if config['PLATFORM'] == 'pc':
+	from iso import ISOBuilder
+	dist['BUILDERS']['ISOImage'] = ISOBuilder
+
+	Default(Alias('cdrom', dist.ISOImage('cdrom.iso', [])))
+
+	# Target to run in QEMU.
+	Alias('qtest', dist.Command('qtest', ['cdrom.iso'], Action(
+		config['QEMU_BINARY'] + ' -cdrom $SOURCE -boot d ' + config['QEMU_OPTS'],
+		None
+	)))

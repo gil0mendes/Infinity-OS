@@ -36,6 +36,13 @@ f.close()
 
 dist = manager['dist']
 
+################
+# Kernel build #
+################
+
+# Build the kernel.
+SConscript(dirs = ['kernel'])
+
 ##############
 # LAOS build #
 ##############
@@ -69,6 +76,13 @@ dist['LOADER'] = File('boot/loader')
 if config['PLATFORM'] == 'pc':
     dist['CDBOOT'] = File('boot/platform/pc/stage1/cdboot')
 
+####################
+# Userspace build. #
+####################
+
+# Build userspace.
+SConscript(dirs = ['lib', 'bin'])
+
 ###############
 # Image build #
 ###############
@@ -79,6 +93,8 @@ AlwaysBuild(fsimage)
 
 # Add aliases and set the default target
 Alias('loader', dist['LOADER'])
+Alias('kernel', dist['KERNEL'])
+Alias('modules', dist['MODULES'])
 Alias('fsimage', fsimage)
 
 # Add platform-specific target to generate bootable images
@@ -86,8 +102,10 @@ if config['PLATFORM'] == 'pc':
 	Default(Alias('cdrom', dist.ISOImage('cdrom.iso', fsimage)))
 
 	# Target to run in QEMU
-	Alias('qemu', dist.Command('__quemu', ['cdrom.iso'], Action(config['QEMU_BINARY'] + ' -cdrom $SOURCE -boot d ' + config['QEMU_OPTS'], None)))
+	Alias('qemu', dist.Command('__quemu', ['cdrom.iso'], Action(
+		config['QEMU_BINARY'] + ' -cdrom $SOURCE -boot d ' + config['QEMU_OPTS'], 
+		None)))
 else:
 	Default(dist['LOADER'])
-
+	Default(dist['KERNEL'])
 #EOF

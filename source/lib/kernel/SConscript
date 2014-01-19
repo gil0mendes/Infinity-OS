@@ -1,0 +1,70 @@
+#
+# Copyright (C) 2010-2014 Gil Mendes
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+Import('manager', 'config')
+
+env = manager.Create(flags = {
+    'LINKFLAGS': ['-nostdlib', '-Wl,-e,libkernel_init', '-Wl,-Bsymbolic'],
+
+    # The default visibility is set to hidden, as the majority of functions in
+    # this library should not be exported.
+    'CCFLAGS': ['-ffreestanding', '-fvisibility=hidden', '-nostdinc'],
+
+    'CPPDEFINES': ['LIBKERNEL'],
+    'CPPPATH': [
+        Dir('.'),
+        Dir('arch/%s' % (config['ARCH'])),
+        Dir('include'),
+        Dir('../system/include'),
+        Dir('../system/arch/%s/include' % (config['ARCH'])),
+    ],
+})
+
+sources = map(File, [
+    'rtld/image.c',
+    'rtld/symbol.c',
+
+    'support/heap.c',
+    'support/printf.c',
+    'support/string.c',
+
+    'fs.c',
+    'init.c',
+    'mutex.c',
+    'process.c',
+    'signal.c',
+    'status_list.c',
+    'syscalls.S',
+    'thread.c',
+    'tls.c',
+])
+
+# Generate the system call functions.
+env.Syscalls('syscalls.S', manager['kernel']['SYSCALLS'])
+
+# Generate the status string list.
+env.Command(
+    'status_list.c',
+    ['include/kernel/status.h'],
+    Action('$GENERRLIST $SOURCE __kernel_status_strings __kernel_status_size > $TARGET', '$GENCOMSTR'))
+
+# Get a list of architecture-specific source files.
+arch_sources = SConscript(dirs = ['arch/%s' % (config['ARCH'])], exports = ['env'])
+
+env.InfiLibrary('kernel',
+    sources = arch_sources + sources,
+    include_paths = [Dir('include')],
+)

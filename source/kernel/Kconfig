@@ -1,0 +1,83 @@
+#
+# Copyright (C) 2010-2011 Gil Mendes
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+config SMP
+	depends on HAVE_SMP
+	def_bool y
+
+config KLOG_SIZE
+	int "Kernel log buffer size"
+	default 16384
+	help
+	  Size for the kernel log buffer (in characters).
+
+if ARCH_AMD64
+source "arch/amd64/Kconfig"
+endif
+
+if PLATFORM_PC
+source "platform/pc/Kconfig"
+endif
+
+########################
+menu "Debugging options"
+	depends on DEBUG
+########################
+
+config SLAB_STATS
+	bool "Slab allocator statistics"
+	default n
+	help
+	  Enable extra statistics in the slab allocator. This is not enabled by
+	  default as it causes a slight performance hit.
+
+config SLAB_TRACING
+	bool "Slab allocation tracing output"
+	default n
+	help
+	  Enable output on the debug console on every slab allocation/free,
+	  useful to run through the allocation statistics script in the
+	  utilities directory.
+
+config PAGE_DEBUG
+	bool "Physical memory debug output"
+	default n
+	help
+	  Enable extra debug output in the physical memory manager. Be warned
+	  that this will write a debug message on every page allocation and
+	  deallocation.
+
+config KMEM_DEBUG
+	bool "Kernel memory allocator debug output"
+	default n
+	help
+	  Enable extra debug output from the kernel virtual memory allocator.
+
+config CACHE_DEBUG
+	bool "Page cache debug output"
+	default n
+	help
+	  Enable debug output from the page cache.
+
+config IPC_DEBUG
+	bool "IPC debug output"
+	default n
+	help
+	  Enable debug output from the IPC code.
+
+#######
+endmenu
+#######

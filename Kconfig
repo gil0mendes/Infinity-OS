@@ -110,4 +110,8 @@ menu "LAOS configuration"
 source "source/boot/Kconfig"
 endmenu
 
+menu "Pulsar Kernel configuration"
+source "source/kernel/Kconfig"
+endmenu
+
 # EOF

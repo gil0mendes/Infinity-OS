@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2012-2013 Designture
+# Copyright (C) 2012-2014 Designture
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the "Software"), to deal in
@@ -25,5 +25,40 @@ import os
 ld_script_builder = Builder(action = Action(
     '$CC $_CCCOMCOM $ASFLAGS -E -x c $SOURCE | grep -v "^\#" > $TARGET',
     '$GENCOMSTR'))
+
+# Custom method to build a Infi application.
+def infi_application_method(env, name, sources, **kwargs):
+    flags = kwargs['flags'] if 'flags' in kwargs else {}
+
+    target = File(name)
+
+    # Add the application to the image.
+    dist = env['_MANAGER']['dist']
+    dist.AddFile(target, 'system/bin/%s' % (name))
+
+    # Build the application.
+    return env.Program(target, sources, **flags)
+
+# Custom method to build a Infi library.
+def infi_library_method(env, name, sources, **kwargs):
+    manager = env['_MANAGER']
+
+    build_libraries = kwargs['build_libraries'] if 'build_libraries' in kwargs else []
+    include_paths = kwargs['include_paths'] if 'include_paths' in kwargs else []
+    flags = kwargs['flags'] if 'flags' in kwargs else {}
+
+    # Register this library with the build manager.
+    manager.AddLibrary(name, build_libraries, include_paths)
+
+    # Modify the target path so that libraries all get placed in the build
+    # library directory.
+    target = File('%s/lib%s.so' % (str(env['_LIBOUTDIR']), name))
+
+    # Add the library to the distribution environment.
+    dist = manager['dist']
+    dist.AddFile(target, 'system/lib/lib%s.so' % (name))
+
+    # Build the library.
+    return env.SharedLibrary(target, sources, **flags)
 
 #EOF

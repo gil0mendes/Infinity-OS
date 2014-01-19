@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2013 Gil Mendes
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/**
+ * @file
+ * @brief		x86 SMP definitions.
+ */
+
+#ifndef __X86_SMP_H
+#define __X86_SMP_H
+
+struct cpu;
+
+/** x86-specific SMP boot status values. */
+#define SMP_BOOT_TSC_SYNC1	4	/**< Stage 1 of TSC synchronization. */
+#define SMP_BOOT_TSC_SYNC2	5	/**< Stage 2 of TSC synchronization. */
+
+extern void x86_smp_boot_prepare(void);
+extern void x86_smp_boot(struct cpu *cpu);
+extern void x86_smp_boot_cleanup(void);
+
+#endif /* __X86_SMP_H */

@@ -50,6 +50,7 @@ class BuildManager:
 		self.AddVariable('RANLIBCOMSTR', 	compile_string('RANLIB', 	'$TARGET'))
 		self.AddVariable('GENCOMSTR', 		compile_string('GEN', 		'$TARGET'))
 		self.AddVariable('STRIPCOMSTR', 	compile_string('STRIP', 	'$TARGET'))
+		self.AddVariable('DCOMSTR', 		compile_string('D', 		'$TARGET'))
 
 		# Add builders from builders.py
 		self.AddBuilder('LDScript', builders.ld_script_builder)

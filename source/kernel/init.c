@@ -78,7 +78,7 @@ __init_text void kmain_bsp(uint32_t magic, laos_tag_t *tags) {
 	/* Bring up the console. */
 	console_early_init();
 	log_early_init();
-	kprintf(LOG_NOTICE, "kernel: version %s booting...\n", pulsar_ver_string);
+	kprintf(LOG_NOTICE, "Pulsar kernel: version %s booting...\n", pulsar_ver_string);
 
 	/* Check the magic number. */
 	if(magic != LAOS_MAGIC) {

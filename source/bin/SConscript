@@ -17,6 +17,7 @@
 dirs = [
     'shell',
     'test',
+	'shutdown',
 ]
 
 SConscript(dirs = dirs)

@@ -183,7 +183,9 @@ acpi_header_t *acpi_table_find(const char *signature) {
 	return NULL;
 }
 
-/** Detect ACPI presence and find needed tables. */
+/** 
+ * Detect ACPI presence and find needed tables. i
+ **/
 __init_text void acpi_init(void) {
 	acpi_rsdp_t *rsdp;
 	uint16_t *mapping;

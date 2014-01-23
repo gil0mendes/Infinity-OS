@@ -30,7 +30,10 @@ env = manager.Create(libraries = ['kernel'], flags = {
 
 sources = map(File, [
 	'Error.cc',
-	'Signal.cc'
+	'Signal.cc',
+	'Log.cc',
+	'Handle.cc',
+	'EventLoop.cc'
 ])
 
 # Build the library from this

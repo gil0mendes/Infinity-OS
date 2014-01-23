@@ -213,16 +213,16 @@ namespace pulsar
 		*
 		* @param args 	Arguments to pass to the slot
 		*/
-	   void operator ()(A... args)
+	   void operator ()(A... args) 
 	   {
-		   SignalImpl::Iterator it(this);
-		   SignalImpl::Slot *slot;
-
-		   while((slot = *it))
-		   {
-			   (*static_cast<Slot *>(slot)(args...));
-		   }
-	   }
+		   	SignalImpl::Iterator it(this);
+			SignalImpl::Slot *slot;
+			
+			while((slot = *it)) 
+			{
+				(*static_cast<Slot *>(slot))(args...);
+			}
+		}
 
 	};
 }

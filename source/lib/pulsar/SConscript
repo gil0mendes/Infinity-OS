@@ -33,7 +33,9 @@ sources = map(File, [
 	'Signal.cc',
 	'Log.cc',
 	'Handle.cc',
-	'EventLoop.cc'
+	'EventLoop.cc',
+	'Timer.cc',
+	'Thread.cc'
 ])
 
 # Build the library from this

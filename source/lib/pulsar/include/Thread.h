@@ -21,31 +21,62 @@
 
 /**
  * @file
- * @brief 	Internal libpulsar definitions.
+ * @brief 	Thread class
  */
 
-#ifndef __INTERNAL_H
-#define __INTERNAL_H
+#ifndef __PULSAR_THREAD_H
+#define __PULSAR_THREAD_H
 
-#include <CoreDefs.h>
-
-// Compiler attribute/builtin macros
-#define likely(x)		__builtin_expect(!!(x), 1)
-#define unlikely(x)		__builtin_expect(!!(x), 0)
-
-#if CONFIG_DEBUG
-extern void libpulsar_debug(const char *fmt, ...) PULSAR_PUBLIC __attribute__((format(printf, 1, 2)));
-#else
-extern void libpulsar_debug(const char *fmt, ...) {};
-#endif
-extern void libpulsar_warn(const char *fmt, ...) PULSAR_PUBLIC __attribute__((format(printf, 1, 2)));
-extern void libpulsar_fatal(const char *fmt, ...) PULSAR_PUBLIC __attribute__((format(printf, 1, 2)));
+#include <Error.h>
+#include <EventLoop.h>
+#include <Handle.h>
 
 namespace pulsar
 {
-	class EventLoop;
+
+	struct ThreadPrivate;
+
+	/** 
+	 * Class implementing a thread. 
+	 */
+	class PULSAR_PUBLIC Thread : public ErrorHandle 
+	{
+		public:
+			Thread(handle_t handle = -1);
+			~Thread();
+
+			void SetName(const char *name);
+			bool Run();
+			bool Wait(useconds_t timeout = -1) const;
+			void Quit(int status = 0);
+
+			bool IsRunning() const;
+			int GetStatus() const;
+			thread_id_t GetID() const;
+
+			/** 
+			 * Signal emitted when the thread exits.
+			 *
+			 * @param		Exit status code. 
+			 */
+			Signal<int> OnExit;
+
+			static thread_id_t GetCurrentID();
+			static void Sleep(useconds_t usecs);
+
+		protected:
+			EventLoop &GetEventLoop();
+			virtual int Main();
+
+		private:
+			void RegisterEvents();
+			void HandleEvent(int event);
+
+			PULSAR_PRIVATE static void _Entry(void *arg);
+
+			ThreadPrivate *m_priv;		// Internal data pointer
+	};
+
 }
 
-extern __thread pulsar::EventLoop *g_event_loop;
-
-#endif // __INTERNAL_H
+#endif // __PULSAR_THREAD_H

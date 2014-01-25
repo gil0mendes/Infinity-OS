@@ -21,31 +21,49 @@
 
 /**
  * @file
- * @brief 	Internal libpulsar definitions.
+ * @brief 	Timer class
  */
 
-#ifndef __INTERNAL_H
-#define __INTERNAL_H
+#ifndef __PULSAR_TIMER_H
+#define __PULSAR_TIMER_H
 
-#include <CoreDefs.h>
-
-// Compiler attribute/builtin macros
-#define likely(x)		__builtin_expect(!!(x), 1)
-#define unlikely(x)		__builtin_expect(!!(x), 0)
-
-#if CONFIG_DEBUG
-extern void libpulsar_debug(const char *fmt, ...) PULSAR_PUBLIC __attribute__((format(printf, 1, 2)));
-#else
-extern void libpulsar_debug(const char *fmt, ...) {};
-#endif
-extern void libpulsar_warn(const char *fmt, ...) PULSAR_PUBLIC __attribute__((format(printf, 1, 2)));
-extern void libpulsar_fatal(const char *fmt, ...) PULSAR_PUBLIC __attribute__((format(printf, 1, 2)));
+#include <Handle.h>
 
 namespace pulsar
 {
-	class EventLoop;
+	// Class implementing an timer
+	class PULSAR_PUBLIC Timer : public Handle
+	{
+		public:
+			// Timer mode values
+			enum Mode
+			{
+				OneShotMode,	// Fire the timer once
+				PeriodicMode, 	// Fire the timer periodically
+			};
+
+			Timer(Mode mode);
+
+			void Start(useconds_t interval);
+			void Stop();
+
+			/**
+			 * Check whether the timer is runing.
+			 *
+			 * @return Whether the timer is running
+			 */
+			 bool IsRunning() const { return m_running; };
+
+			 // Signal emitted when the timer event fires
+			 Signal<> OnTimer;
+
+		private:
+			void RegisterEvents();
+			void HandleEvent(int event);
+
+			Mode m_mode; 		// Timer mode
+			bool m_running;	// Whether the timer is running
+	};
 }
 
-extern __thread pulsar::EventLoop *g_event_loop;
-
-#endif // __INTERNAL_H
+#endif // __PULSAR_TIMER_H

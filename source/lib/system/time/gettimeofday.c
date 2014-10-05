@@ -23,14 +23,19 @@
 #include <sys/time.h>
 #include <errno.h>
 
-/** Get the current time.
+/**
+ * Get the current time.
+ *
  * @param tv		Structure to fill with time since epoch.
  * @param tz		Pointer to timezone (ignored).
- * @return		0 on success, -1 on failure. */
-int gettimeofday(struct timeval *tv, void *tz) {
+ * @return		0 on success, -1 on failure.
+ */
+int
+gettimeofday(struct timeval *tv, void *tz)
+{
 	nstime_t ktime;
 
-	kern_unix_time(&ktime);
+	kern_time_get(TIME_REAL, &ktime);
 	tv->tv_sec = ktime / 1000000000;
 	tv->tv_usec = (ktime % 1000000000) / 1000;
 	return 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Gil Mendes
+ * Copyright (C) 2010-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -42,8 +42,12 @@ extern status_t kern_timer_create(uint32_t flags, handle_t *handlep);
 extern status_t kern_timer_start(handle_t handle, nstime_t interval, unsigned mode);
 extern status_t kern_timer_stop(handle_t handle, nstime_t *remp);
 
-extern status_t kern_system_time(nstime_t *timep);
-extern status_t kern_unix_time(nstime_t *timep);
+// Time sources
+#define TIME_SYSTEM     1   // Monotonic system time
+#define TIME_REAL       2   // Real time (time since UNIX epoch)
+
+extern status_t kern_time_get(unsigned source, nstime_t *timep);
+extern status_t kern_time_set(unsigned source, nstime_t time);
 
 #ifdef __cplusplus
 }

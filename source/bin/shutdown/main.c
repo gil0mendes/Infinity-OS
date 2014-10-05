@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 		action = SHUTDOWN_REBOOT;
 	}
 
-	ret = kern_shutdown(action);
+	ret = kern_system_shutdown(action);
 	printf("%s: %s\n", argv[0], __kernel_status_strings[ret]);
 	return EXIT_SUCCESS;
 }

@@ -78,7 +78,7 @@ _Ux86_64_setcontext:
 	jne 1f
 	fxrstor UC_MCONTEXT_FPSTATE(%rdi)
 1:
-#elif defined __Kiwi__
+#elif defined __Pulsar__
 	/* TODO: sigmask */
 #else
 #error Port me

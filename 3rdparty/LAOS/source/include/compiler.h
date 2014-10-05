@@ -40,7 +40,7 @@
 # define likely(x)		__builtin_expect(!!(x), 1)
 # define unlikely(x)		__builtin_expect(!!(x), 0)
 #else
-# error "Kiwi does not currently support compilers other than GCC"
+# error "Pulsar does not currently support compilers other than GCC"
 #endif
 
 #define STRINGIFY(val)		#val

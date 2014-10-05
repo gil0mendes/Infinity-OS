@@ -17,7 +17,7 @@
 Import('env', 'envmgr')
 
 # Build the program itself.
-target = env.KiwiApplication('dungeon',
+target = env.PulsarApplication('dungeon',
 	sources = [
 		'actors.c',
 		'ballop.c',

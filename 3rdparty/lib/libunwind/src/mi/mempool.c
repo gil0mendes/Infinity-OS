@@ -128,7 +128,7 @@ expand (struct mempool *pool)
 HIDDEN void
 mempool_init (struct mempool *pool, size_t obj_size, size_t reserve)
 {
-#if defined(__Kiwi__) && defined(__x86_64__)
+#if defined(__Pulsar__) && defined(__x86_64__)
   if (pg_size == 0)
     kern_system_info(SYSTEM_INFO_PAGE_SIZE, &pg_size);
 #else

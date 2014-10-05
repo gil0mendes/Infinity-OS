@@ -2221,7 +2221,7 @@ void idiv_byte(u8 s)
 	}
 	div = dvd / (s8)s;
 	mod = dvd % (s8)s;
-	/* Kiwi modification - use __builtin_abs */
+	/* Pulsar modification - use __builtin_abs */
 	if (__builtin_abs(div) > 0x7f) {
 		x86emu_intr_raise(0);
 		return;
@@ -2245,7 +2245,7 @@ void idiv_word(u16 s)
 	}
 	div = dvd / (s16)s;
 	mod = dvd % (s16)s;
-	/* Kiwi modification - use __builtin_abs */
+	/* Pulsar modification - use __builtin_abs */
 	if (__builtin_abs(div) > 0x7fff) {
 		x86emu_intr_raise(0);
 		return;
@@ -2275,7 +2275,7 @@ void idiv_long(u32 s)
 	}
 	div = dvd / (s32)s;
 	mod = dvd % (s32)s;
-	/* Kiwi modification - use __builtin_abs */
+	/* Pulsar modification - use __builtin_abs */
 	if (__builtin_abs(div) > 0x7fffffff) {
 		x86emu_intr_raise(0);
 		return;
@@ -2349,7 +2349,7 @@ void div_byte(u8 s)
     }
 	div = dvd / (u8)s;
 	mod = dvd % (u8)s;
-	/* Kiwi modification - use __builtin_abs */
+	/* Pulsar modification - use __builtin_abs */
 	if (__builtin_abs(div) > 0xff) {
 		x86emu_intr_raise(0);
         return;
@@ -2373,7 +2373,7 @@ void div_word(u16 s)
     }
 	div = dvd / (u16)s;
 	mod = dvd % (u16)s;
-	/* Kiwi modification - use __builtin_abs */
+	/* Pulsar modification - use __builtin_abs */
 	if (__builtin_abs(div) > 0xffff) {
 		x86emu_intr_raise(0);
 		return;
@@ -2403,7 +2403,7 @@ void div_long(u32 s)
 	}
 	div = dvd / (u32)s;
 	mod = dvd % (u32)s;
-	/* Kiwi modification - use __builtin_abs */
+	/* Pulsar modification - use __builtin_abs */
 	if ((unsigned int)__builtin_abs(div) > 0xffffffff) {
 		x86emu_intr_raise(0);
 		return;

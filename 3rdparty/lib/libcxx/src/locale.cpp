@@ -1040,7 +1040,7 @@ ctype<char>::classic_table()  _NOEXCEPT
 #else
     // Platform not supported: abort so the person doing the port knows what to
     // fix
-# ifndef __Kiwi__
+# ifndef __Pulsar__
 #  warning  ctype<char>::classic_table() is not implemented
     printf("ctype<char>::classic_table() is not implemented\n");
     abort();

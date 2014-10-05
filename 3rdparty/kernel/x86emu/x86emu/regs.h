@@ -328,7 +328,7 @@ extern    X86EMU_sysEnv	_X86EMU_env;
 
 /* Function to log information at runtime */
 
-/* Kiwi modification. */
+/* Pulsar modification. */
 #include <kernel.h>
 #define printk(fmt...)	kprintf(LOG_DEBUG, fmt)
 //void	printk(const char *fmt, ...);

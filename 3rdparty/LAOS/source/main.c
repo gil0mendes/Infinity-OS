@@ -56,7 +56,7 @@ void loader_preboot(void) {
 		preboot_hooks[i]();
 }
 
-/** Main function for the Kiwi bootloader. */
+/** Main function for the Pulsar bootloader. */
 void loader_main(void) {
 	/* We must have a filesystem to boot from. */
 	if(!boot_device || !boot_device->fs)

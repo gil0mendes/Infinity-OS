@@ -25,10 +25,10 @@ config 32BIT
 config 64BIT
 	bool
 
-config LITTLE_ENDIAN
+config SYS_SUPPORTS_LITTLE_ENDIAN
 	bool
 
-config BIG_ENDIAN
+config SYS_SUPPORTS_BIG_ENDIAN
 	bool
 
 config TOOLCHAIN_LLVM
@@ -40,7 +40,7 @@ config TOOLCHAIN_GCC
 # For LAOS compatibility.
 config ARCH_X86
 	bool
-	select LITTLE_ENDIAN
+	select SYS_SUPPORTS_LITTLE_ENDIAN
 	select TOOLCHAIN_LLVM
 
 choice
@@ -70,8 +70,24 @@ config TOOLCHAIN_TARGET
 	string
 	default "x86_64-pulsar" if ARCH_AMD64
 
+config ARCH_ASFLAGS
+    string
+    default ""
+
 config ARCH_CCFLAGS
 	string
 	default ""
 
-#EOF
+choice
+    prompt "Endianness"
+    default LITTLE_ENDIAN
+
+config BIG_ENDIAN
+    bool "Big endian"
+    depends on SYS_SUPPORTS_BIG_ENDIAN
+
+config LITTLE_ENDIAN
+    bool "Little endian"
+    depends on SYS_SUPPORTS_LITTLE_ENDIAN
+
+endchoice

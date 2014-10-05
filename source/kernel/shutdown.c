@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Gil Mendes
+ * Copyright (C) 2010-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -71,9 +71,14 @@ static void shutdown_thread_entry(void *_action, void *arg2) {
 	arch_cpu_halt();
 }
 
-/** Shut down the system.
- * @param action	Action to perform once the system has been shut down. */
-void system_shutdown(int action) {
+/**
+* Shut down the system.
+*
+* @param action	Action to perform once the system has been shut down.
+*/
+void
+system_shutdown(unsigned action)
+{
 	status_t ret;
 
 	if(!shutdown_in_progress) {
@@ -113,7 +118,9 @@ void system_shutdown(int action) {
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_shutdown(int action) {
+status_t
+kern_system_shutdown(unsigned action)
+{
 	system_shutdown(action);
 	fatal("Shouldn't get here");
 }

@@ -28,7 +28,9 @@
 
 // Note:  optimize for size
 
+#if ! defined(_LIBCPP_MSVC)
 #pragma GCC visibility push(hidden)
+#endif
 
 namespace
 {
@@ -91,7 +93,9 @@ __libcpp_nmstr::~__libcpp_nmstr()
 
 }
 
+#if ! defined(_LIBCPP_MSVC)
 #pragma GCC visibility pop
+#endif
 
 namespace std  // purposefully not using versioning namespace
 {
@@ -123,7 +127,7 @@ logic_error::operator=(const logic_error& le) _NOEXCEPT
     return *this;
 }
 
-#ifndef _LIBCPPABI_VERSION
+#if !defined(_LIBCPPABI_VERSION) && !defined(LIBSTDCXX)
 
 logic_error::~logic_error() _NOEXCEPT
 {
@@ -167,7 +171,7 @@ runtime_error::operator=(const runtime_error& le) _NOEXCEPT
     return *this;
 }
 
-#ifndef _LIBCPPABI_VERSION
+#if !defined(_LIBCPPABI_VERSION) && !defined(LIBSTDCXX)
 
 runtime_error::~runtime_error() _NOEXCEPT
 {

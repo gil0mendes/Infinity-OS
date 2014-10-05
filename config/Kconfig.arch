@@ -19,10 +19,10 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-config ARCH_32BIT
+config 32BIT
 	bool
 
-config ARCH_64BIT
+config 64BIT
 	bool
 
 config LITTLE_ENDIAN
@@ -49,7 +49,7 @@ choice
 
 config ARCH_AMD64
 	bool "AMD64"
-	select ARCH_64BIT
+	select 64BIT
 	select ARCH_X86
 	help
 	  Target the built system to 64-bit x86 processors.

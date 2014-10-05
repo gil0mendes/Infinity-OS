@@ -24,6 +24,8 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.  */
 
+#include <kernel/system.h>
+
 #include "libunwind_i.h"
 
 /* From GCC docs: ``Gcc also provides a target specific macro
@@ -126,9 +128,9 @@ expand (struct mempool *pool)
 HIDDEN void
 mempool_init (struct mempool *pool, size_t obj_size, size_t reserve)
 {
-#if defined(__Pulsar__) && defined(__x86_64__)
+#if defined(__Kiwi__) && defined(__x86_64__)
   if (pg_size == 0)
-    pg_size = 4096;
+    kern_system_info(SYSTEM_INFO_PAGE_SIZE, &pg_size);
 #else
   if (pg_size == 0)
     pg_size = getpagesize ();

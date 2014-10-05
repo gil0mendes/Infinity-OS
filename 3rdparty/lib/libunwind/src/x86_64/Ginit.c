@@ -73,7 +73,7 @@ get_dyn_info_list_addr (unw_addr_space_t as, unw_word_t *dyn_info_list_addr,
 
 static int (*mem_validate_func) (void *addr, size_t len);
 
-#ifdef __Pulsar__
+#ifdef __Kiwi__
 static int msync_validate (void *addr, size_t len)
 {
   return 0;

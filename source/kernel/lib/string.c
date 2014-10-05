@@ -91,7 +91,7 @@ void *memcpy(void *restrict dest, const void *restrict src, size_t count) {
  * @return		Destination location. */
 void *memset(void *dest, int val, size_t count) {
 	unsigned char c = val & 0xff;
-	unsigned long *nd, nval;
+	unsigned long *nd, nval = 0;
 	char *d = (char *)dest;
 
 	/* Align the destination. */
@@ -108,12 +108,10 @@ void *memset(void *dest, int val, size_t count) {
 		nd = (unsigned long *)d;
 
 		/* Compute the value we will write. */
-		#if CONFIG_ARCH_64BIT
+		#if CONFIG_64BIT
 		nval = c * 0x0101010101010101ul;
-		#elif CONFIG_ARCH_32BIT
+		#elif CONFIG_32BIT
 		nval = c * 0x01010101ul;
-		#else
-		# error "Unsupported"
 		#endif
 
 		/* Unroll the loop if possible. */

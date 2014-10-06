@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2010 Alex Smith
+ * Copyright (C) 2009-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -32,9 +32,6 @@
 #define ELF_CLASS		ELFCLASS64
 #define ELF_ENDIAN		ELFDATA2LSB
 #define ELF_MACHINE		ELF_EM_X86_64
-
-/* FIXME: Better place for this. */
-#define PAGE_SIZE		0x1000
 
 /** TLS settings. */
 #define TLS_VARIANT2		1	/**< Use variant II. */

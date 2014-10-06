@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Alex Smith
+ * Copyright (C) 2010-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -24,18 +24,22 @@
 #include <kernel/private/thread.h>
 #include <kernel/object.h>
 #include <kernel/signal.h>
+#include <kernel/system.h>
 
 #include <elf.h>
 #include <string.h>
 
 #include "libkernel.h"
 
+// System page size
+size_t page_size;
+
 extern void libkernel_init_stage2(process_args_t *args, void *load_base);
 
 /**
  * Kernel library 1st stage initialisation.
  *
- * The job of this function is to relocate the the library. The kernel just
+ * The job of this function is to relocate the library. The kernel just
  * loads us somewhere and does not perform any relocations. We must therefore
  * relocate ourselves before we can make any calls to exported functions or
  * use global variables.
@@ -115,6 +119,9 @@ void libkernel_init_stage2(process_args_t *args, void *load_base) {
 			break;
 		}
 	}
+
+    /* Get the system page size. */
+    kern_system_info(SYSTEM_INFO_PAGE_SIZE, &page_size);
 
 	/* Save the current process ID for the kern_process_id() wrapper. */
 	curr_process_id = _kern_process_id(PROCESS_SELF);

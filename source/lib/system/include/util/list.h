@@ -65,7 +65,7 @@ typedef struct list {
 	}
 
 /** Statically declares a new linked list. */
-#define LIST_DECLARE(_var)			\
+#define LIST_DEFINE(_var)			\
 	list_t _var = LIST_INITIALISER(_var)
 
 /** Gets a pointer to the structure containing a list header, given the

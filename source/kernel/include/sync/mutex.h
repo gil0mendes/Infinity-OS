@@ -54,7 +54,7 @@ typedef struct mutex {
 	}
 
 /** Statically declares a new mutex. */
-#define MUTEX_DECLARE(_var, _flags)		\
+#define MUTEX_DEFINE(_var, _flags)		\
 	mutex_t _var = MUTEX_INITIALIZER(_var, #_var, _flags)
 
 /** Mutex behaviour flags. */

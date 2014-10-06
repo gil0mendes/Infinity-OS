@@ -40,7 +40,7 @@ typedef struct spinlock {
 	}
 
 /** Statically declares a new spinlock. */
-#define SPINLOCK_DECLARE(_var)		\
+#define SPINLOCK_DEFINE(_var)		\
 	spinlock_t _var = SPINLOCK_INITIALIZER(#_var)
 
 /** Check if a spinlock is held.

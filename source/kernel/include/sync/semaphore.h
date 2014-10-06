@@ -44,7 +44,7 @@ typedef struct semaphore {
 	}
 
 /** Statically declares a new semaphore. */
-#define SEMAPHORE_DECLARE(_var, _initial)		\
+#define SEMAPHORE_DEFINE(_var, _initial)		\
 	semaphore_t _var = SEMAPHORE_INITIALIZER(_var, #_var, _initial)
 
 /** Get the current value of a semaphore.

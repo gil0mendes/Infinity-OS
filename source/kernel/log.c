@@ -48,7 +48,7 @@ static uint32_t klog_start = 0;
 static uint32_t klog_length = 0;
 
 /** Lock protecting the kernel log. */
-static SPINLOCK_DECLARE(klog_lock);
+static SPINLOCK_DEFINE(klog_lock);
 
 /** LAOS log buffer. */
 laos_log_t *laos_log = NULL;

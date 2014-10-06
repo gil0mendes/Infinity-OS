@@ -41,7 +41,7 @@ typedef struct condvar {
 	}
 
 /** Statically declares a new condition variable. */
-#define CONDVAR_DECLARE(_var)			\
+#define CONDVAR_DEFINE(_var)			\
 	condvar_t _var = CONDVAR_INITIALIZER(_var, #_var)
 
 extern status_t condvar_wait_etc(condvar_t *cv, mutex_t *lock, nstime_t timeout,

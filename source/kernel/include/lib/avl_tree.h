@@ -59,7 +59,7 @@ typedef struct avl_tree {
 	}
 
 /** Statically declares a new AVL tree. */
-#define AVL_TREE_DECLARE(_var) \
+#define AVL_TREE_DEFINE(_var) \
 	avl_tree_t _var = AVL_TREE_INITIALIZER()
 
 /** Get a pointer to the structure containing an AVL tree node.

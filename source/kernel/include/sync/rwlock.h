@@ -46,7 +46,7 @@ typedef struct rwlock {
 	}
 
 /** Statically declares a new readers-writer lock. */
-#define RWLOCK_DECLARE(_var)			\
+#define RWLOCK_DEFINE(_var)			\
 	rwlock_t _var = RWLOCK_INITIALIZER(_var, #_var)
 
 extern status_t rwlock_read_lock_etc(rwlock_t *lock, nstime_t timeout, unsigned flags);

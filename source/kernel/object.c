@@ -700,18 +700,27 @@ __init_text void object_init(void) {
 		kdb_cmd_handles);
 }
 
-/** Get the type of an object referred to by a handle.
- * @param handle	Handle to object.
- * @return		Type ID of object on success, -1 if the handle was not
- *			found. */
-int kern_object_type(handle_t handle) {
+/**
+* Get the type of an object referred to by a handle.
+*
+* @param handle	Handle to object.
+*
+* @return		Type ID of object on success, -1 if the handle was not
+*			    found.
+*/
+status_t
+kern_object_type(handle_t handle)
+{
 	object_handle_t *khandle;
-	int ret;
+    status_t ret;
 
-	if(object_handle_lookup(handle, -1, &khandle) != STATUS_SUCCESS)
-		return -1;
+	ret = object_handle_lookup(handle, -1, &khandle);
 
-	ret = khandle->type->id;
+    if (ret != STATUS_SUCCESS) {
+        return ret;
+    }
+
+	ret = write_user(typep, khandle->type->id);
 	object_handle_release(khandle);
 	return ret;
 }

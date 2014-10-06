@@ -28,29 +28,42 @@
 
 #include "libsystem.h"
 
-/** Flush changes to a file to disk.
- * @param fd		Descriptor for file to flush. */
-int fsync(int fd) {
-	status_t ret;
+/**
+* Flush changes to a file to disk.
+*
+* @param fd		Descriptor for file to flush.
+* */
+int
+fsync(int fd)
+{
+    unsigned type;
+    status_t ret;
 
-	switch(kern_object_type(fd)) {
-	case OBJECT_TYPE_FILE:
-		ret = kern_file_sync(fd);
-		if(ret != STATUS_SUCCESS) {
-			libsystem_status_to_errno(ret);
-			return -1;
-		}
-		return 0;
-	case -1:
-		errno = EBADF;
-		return -1;
-	default:
-		errno = EINVAL;
-		return -1;
-	}
+    ret = kern_object_type(fd, &type);
+    if(ret != STATUS_SUCCESS) {
+        libsystem_status_to_errno(ret);
+        return -1;
+    }
+
+    switch(type) {
+        case OBJECT_TYPE_FILE:
+            ret = kern_file_sync(fd);
+            if(ret != STATUS_SUCCESS) {
+                libsystem_status_to_errno(ret);
+                return -1;
+            }
+            return 0;
+        default:
+            errno = EINVAL;
+            return -1;
+    }
 }
 
-/** Flush filesystem caches. */
-void sync(void) {
-	kern_fs_sync();
+/**
+* Flush filesystem caches.
+*/
+void
+sync(void)
+{
+    kern_fs_sync();
 }

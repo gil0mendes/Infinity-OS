@@ -29,28 +29,39 @@
 
 #include "libsystem.h"
 
-/** Check whether a file descriptor refers to a TTY.
- * @param fd		File descriptor to check.
- * @return		1 if a TTY, 0 if not. */
-int isatty(int fd) {
-	file_info_t info;
-	status_t ret;
+/**
+* Check whether a file descriptor refers to a TTY.
+*
+* @param fd		File descriptor to check.
+*
+* @return		1 if a TTY, 0 if not.
+*/
+int
+isatty(int fd)
+{
+    file_info_t info;
+    unsigned type;
+    status_t ret;
 
-	switch(kern_object_type(fd)) {
-	case -1:
-		errno = EBADF;
-		return 0;
-	case OBJECT_TYPE_FILE:
-		ret = kern_file_info(fd, &info);
-		if(ret != STATUS_SUCCESS) {
-			libsystem_status_to_errno(ret);
-			return 0;
-		}
+    ret = kern_object_type(fd, &type);
+    if(ret != STATUS_SUCCESS) {
+        libsystem_status_to_errno(ret);
+        return 0;
+    }
 
-		if(info.type == FILE_TYPE_CHAR)
-			return 1;
-	default:
-		errno = ENOTTY;
-		return 0;
-	}
+    switch(type) {
+        case OBJECT_TYPE_FILE:
+            ret = kern_file_info(fd, &info);
+            if(ret != STATUS_SUCCESS) {
+                libsystem_status_to_errno(ret);
+                return 0;
+            }
+
+            if(info.type == FILE_TYPE_CHAR) {
+                return 1;
+            }
+        default:
+            errno = ENOTTY;
+            return 0;
+    }
 }

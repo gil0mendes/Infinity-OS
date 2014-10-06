@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Gil Mendes
+ * Copyright (C) 2010-2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -27,8 +27,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-struct cpu_context;
 
 /** Value used to refer to an invalid handle.
  * @note		This is used to mean various things, for example with

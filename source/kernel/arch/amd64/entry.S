@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 Gil Mendes
+ * Copyright (C) 2008-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -239,7 +239,7 @@ FUNCTION_START(syscall_entry)
 	pop	%r11
 	pop	%rsp
 
-	/* Restore previous GS base and return to user-mode. */
+	/* Restore previous GS base and return to user mode. */
 	swapgs
 	sysretq
 .Lstackargs:
@@ -281,7 +281,7 @@ FUNCTION_START(syscall_entry)
 	POP_REGS
 	addq	$16, %rsp
 
-	/* Return to userspace. */
+	/* Return to user mode. */
 	swapgs
 	iretq
 .Lcpyfail:
@@ -293,9 +293,12 @@ FUNCTION_START(syscall_entry)
 	jmp	.Lreturn
 FUNCTION_END(syscall_entry)
 
-/** Enter userspace in the current thread.
- * @param frame		Previously prepared frame. */
-FUNCTION_START(arch_thread_enter_userspace)
+/**
+ * Enter user mode in the current thread.
+ *
+ * @param frame		Previously prepared frame.
+ */
+FUNCTION_START(arch_thread_user_enter)
 	/* Point SP at the frame to restore. */
 	movq	%rdi, %rsp
 
@@ -303,7 +306,6 @@ FUNCTION_START(arch_thread_enter_userspace)
 	POP_REGS
 	addq	$16, %rsp
 
-	/* Enter userspace. */
 	swapgs
 	iretq
-FUNCTION_END(arch_thread_enter_userspace)
+FUNCTION_END(arch_thread_user_enter)

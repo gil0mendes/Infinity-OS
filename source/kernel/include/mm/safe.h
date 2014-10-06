@@ -15,9 +15,9 @@
  */
 
 /**
- * @file
- * @brief		Safe user memory access functions.
- */
+* @file
+* @brief		Safe user memory access functions.
+*/
 
 #ifndef __MM_SAFE_H
 #define __MM_SAFE_H
@@ -27,15 +27,13 @@
 
 #include <types.h>
 
+#if USER_BASE > 0
+
 /** Check whether an address is a user address.
  * @param addr		Address to check.
  * @return		Whether the address is a user address. */
 static inline bool is_user_address(const void *addr) {
-	#if USER_BASE > 0
 	return ((ptr_t)addr >= USER_BASE && (ptr_t)addr <= USER_END);
-	#else
-	return ((ptr_t)addr < USER_SIZE);
-	#endif 
 }
 
 /** Check if an address range is within userspace memory.
@@ -45,15 +43,25 @@ static inline bool is_user_address(const void *addr) {
 static inline bool is_user_range(const void *addr, size_t size) {
 	if(!size) size = 1;
 
-	#if USER_BASE > 0
 	return ((ptr_t)addr >= USER_BASE
 		&& (ptr_t)addr + size - 1 <= USER_END
 		&& (ptr_t)addr + size - 1 >= (ptr_t)addr);
-	#else
-	return ((ptr_t)addr + size - 1 <= USER_END
-		&& (ptr_t)addr + size -1 >= (ptr_t)addr);
-	#endif
 }
+
+#else /* USER_BASE > 0 */
+
+static inline bool is_user_address(const void *addr) {
+    return ((ptr_t)addr < USER_SIZE);
+}
+
+static inline bool is_user_range(const void *addr, size_t size) {
+    if(!size) size = 1;
+
+    return ((ptr_t)addr + size - 1 <= USER_END
+            && (ptr_t)addr + size -1 >= (ptr_t)addr);
+}
+
+#endif /* USER_BASE > 0 */
 
 extern status_t memcpy_from_user(void *dest, const void *src, size_t count);
 extern status_t memcpy_to_user(void *dest, const void *src, size_t count);
@@ -65,9 +73,9 @@ extern status_t strndup_from_user(const void *src, size_t max, char **destp);
 extern status_t arrcpy_from_user(const char *const src[], char ***arrayp);
 
 /** Read a value from userspace.
- * @param ptr		User pointer to read from, must point to a simple type.
- * @param val		Pointer to location in which to store result.
- * @return		Status code describing result of the operation. */
+* @param ptr		User pointer to read from, must point to a simple type.
+* @param val		Pointer to location in which to store result.
+* @return		Status code describing result of the operation. */
 #define read_user(ptr, val)	\
 	__extension__ \
 	({ \
@@ -95,9 +103,9 @@ extern status_t arrcpy_from_user(const char *const src[], char ***arrayp);
 	})
 
 /** Write a value to userspace.
- * @param ptr		User pointer to write to, must point to a simple type.
- * @param val		Value to write (only evaluated once).
- * @return		Status code describing result of the operation. */
+* @param ptr		User pointer to write to, must point to a simple type.
+* @param val		Value to write (only evaluated once).
+* @return		Status code describing result of the operation. */
 #define write_user(ptr, val)	\
 	__extension__ \
 	({ \

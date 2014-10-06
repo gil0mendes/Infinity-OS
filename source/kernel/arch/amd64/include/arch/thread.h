@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2011 Gil Mendes
+ * Copyright (C) 2009-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above

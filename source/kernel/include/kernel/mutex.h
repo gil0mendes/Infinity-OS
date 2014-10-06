@@ -28,16 +28,16 @@
 extern "C" {
 #endif
 
+#ifndef __KERNEL
+
 /** Initializer for a mutex. */
 #define MUTEX_INITIALIZER		0
-
-#ifndef KERNEL
 
 extern bool kern_mutex_held(int32_t *mutex);
 extern status_t kern_mutex_lock(int32_t *lock, nstime_t timeout);
 extern void kern_mutex_unlock(int32_t *lock);
 
-#endif
+#endif /* __KERNEL */
 
 #ifdef __cplusplus
 }

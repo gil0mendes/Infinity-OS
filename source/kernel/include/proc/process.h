@@ -78,9 +78,12 @@ typedef struct process {
 	avl_tree_t futexes;		    /**< Tree of futexes that the process has accessed. */
 	list_t images;			    /**< List of loaded images. */
 	image_id_t next_image_id;	/**< Next image ID. */
-    ptr_t thread_restore;       /**< Address of kern_thread_restore(). */
+  ptr_t thread_restore;       /**< Address of kern_thread_restore(). */
 
-                                /** Special ports. */
+	/** Exception handler table. */
+	exception_handler_t exceptions[EXCEPTION_MAX];
+
+  /** Special ports. */
 	struct ipc_port *root_port;	/**< Root port. */
 
 	/** State of the process. */

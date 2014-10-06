@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		Kernel library header.
-*/
+ * @file
+ * @brief		Kernel library header.
+ */
 
 #ifndef __LIBKERNEL_H
 #define __LIBKERNEL_H
@@ -69,42 +69,42 @@
 
 /** Structure describing a loaded image. */
 typedef struct rtld_image {
-    list_t header;			/**< Link to loaded images library. */
+	list_t header;			/**< Link to loaded images library. */
 
-    /** Basic image information. */
-    image_id_t id;			/**< ID of the image. */
-    const char *name;		/**< Shared object name of the library. */
-    const char *path;		/**< Full path to image file. */
-    int refcount;			/**< Reference count (tracks what is using the image). */
-    elf_ehdr_t *ehdr;		/**< ELF executable header. */
-    elf_phdr_t *phdrs;		/**< Address of program headers. */
-    size_t num_phdrs;		/**< Number of program headers. */
-    elf_addr_t dynamic[ELF_DT_NUM];	/**< Cached dynamic section entries. */
-    elf_dyn_t *dyntab;		/**< Pointer to dynamic section. */
+	/** Basic image information. */
+	image_id_t id;			/**< ID of the image. */
+	const char *name;		/**< Shared object name of the library. */
+	const char *path;		/**< Full path to image file. */
+	int refcount;			/**< Reference count (tracks what is using the image). */
+	elf_ehdr_t *ehdr;		/**< ELF executable header. */
+	elf_phdr_t *phdrs;		/**< Address of program headers. */
+	size_t num_phdrs;		/**< Number of program headers. */
+	elf_addr_t dynamic[ELF_DT_NUM];	/**< Cached dynamic section entries. */
+	elf_dyn_t *dyntab;		/**< Pointer to dynamic section. */
 
-    /** Where the image is loaded to (for ELF_ET_DYN). */
-    void *load_base;		/**< Base address for the image. */
-    size_t load_size;		/**< Size of the image's memory region. */
+	/** Where the image is loaded to (for ELF_ET_DYN). */
+	void *load_base;		/**< Base address for the image. */
+	size_t load_size;		/**< Size of the image's memory region. */
 
-    /** Symbol hash table. */
-    Elf32_Word *h_buckets;		/**< Hash table buckets. */
-    int h_nbucket;			/**< Number of hash buckets. */
-    Elf32_Word *h_chains;		/**< Hash table chains. */
-    int h_nchain;			/**< Number of chain entries. */
+	/** Symbol hash table. */
+	Elf32_Word *h_buckets;		/**< Hash table buckets. */
+	int h_nbucket;			/**< Number of hash buckets. */
+	Elf32_Word *h_chains;		/**< Hash table chains. */
+	int h_nchain;			/**< Number of chain entries. */
 
-    /** TLS information. */
-    size_t tls_module_id;		/**< TLS module ID (0 if no TLS data). */
-    void *tls_image;		/**< Initial TLS image. */
-    size_t tls_filesz;		/**< File size of TLS image. */
-    size_t tls_memsz;		/**< Memory size of TLS image. */
-    size_t tls_align;		/**< TLS image alignment. */
-    ptrdiff_t tls_offset;		/**< Offset of TLS data from thread pointer. */
+	/** TLS information. */
+	size_t tls_module_id;		/**< TLS module ID (0 if no TLS data). */
+	void *tls_image;		/**< Initial TLS image. */
+	size_t tls_filesz;		/**< File size of TLS image. */
+	size_t tls_memsz;		/**< Memory size of TLS image. */
+	size_t tls_align;		/**< TLS image alignment. */
+	ptrdiff_t tls_offset;		/**< Offset of TLS data from thread pointer. */
 
-    /** State of the image. */
-    enum {
-        RTLD_IMAGE_LOADING,	/**< Image is currently being loaded. */
-                RTLD_IMAGE_LOADED,	/**< Image is fully loaded. */
-    } state;
+	/** State of the image. */
+	enum {
+		RTLD_IMAGE_LOADING,	/**< Image is currently being loaded. */
+		RTLD_IMAGE_LOADED,	/**< Image is fully loaded. */
+	} state;
 } rtld_image_t;
 
 /** Pre-defined TLS module IDs. */
@@ -130,10 +130,10 @@ extern bool libkernel_debug;
 
 extern status_t rtld_image_relocate(rtld_image_t *image);
 extern status_t rtld_image_load(const char *path, rtld_image_t *req, int type,
-        void **entryp, rtld_image_t **imagep);
+	void **entryp, rtld_image_t **imagep);
 extern void rtld_image_unload(rtld_image_t *image);
 extern bool rtld_symbol_lookup(rtld_image_t *start, const char *name, elf_addr_t *addrp,
-        rtld_image_t **sourcep);
+	rtld_image_t **sourcep);
 extern void rtld_symbol_init(rtld_image_t *image);
 extern void *rtld_init(process_args_t *args, bool dry_run);
 

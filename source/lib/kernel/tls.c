@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2014 Gil Mendes
+ * Copyright (C) 2010-2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -213,8 +213,9 @@ status_t tls_init(void) {
 
 	/* Allocate the TLS block. */
 	size = ROUND_UP(initial_block_size(), page_size);
-	ret = kern_vm_map(&alloc, size, VM_ADDRESS_ANY, VM_ACCESS_READ | VM_ACCESS_WRITE,
-		VM_MAP_PRIVATE, INVALID_HANDLE, 0, NULL);
+	ret = kern_vm_map(&alloc, size, VM_ADDRESS_ANY,
+		VM_ACCESS_READ | VM_ACCESS_WRITE, VM_MAP_PRIVATE,
+		INVALID_HANDLE, 0, NULL);
 	if(ret != STATUS_SUCCESS) {
 		free(dtv);
 		return ret;

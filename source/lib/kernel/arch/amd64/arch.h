@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2014 Gil Mendes
+ * Copyright (C) 2009-2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		AMD64 kernel library definitions.
-*/
+ * @file
+ * @brief		AMD64 kernel library definitions.
+ */
 
 #ifndef __LIBKERNEL_ARCH_H
 #define __LIBKERNEL_ARCH_H
@@ -51,17 +51,17 @@ typedef Elf64_Dyn  elf_dyn_t;		/**< ELF dynamic section type. */
 
 /** TLS thread control block. */
 typedef struct tls_tcb {
-    void *tpt;			/**< Pointer to this structure. */
-    ptr_t *dtv;			/**< Dynamic thread vector. */
-    void *base;			/**< Base address of initial TLS allocation. */
+	void *tpt;			/**< Pointer to this structure. */
+	ptr_t *dtv;			/**< Dynamic thread vector. */
+	void *base;			/**< Base address of initial TLS allocation. */
 } tls_tcb_t;
 
 /** Get a pointer to the current thread's TCB.
-* @return		Pointer to TCB. */
+ * @return		Pointer to TCB. */
 static inline tls_tcb_t *tls_tcb_get(void) {
-    unsigned long addr;
-    __asm__ volatile("movq %%fs:0, %0" : "=r"(addr));
-    return (tls_tcb_t *)addr;
+	unsigned long addr;
+	__asm__ volatile("movq %%fs:0, %0" : "=r"(addr));
+	return (tls_tcb_t *)addr;
 }
 
 extern void tls_tcb_init(tls_tcb_t *tcb);

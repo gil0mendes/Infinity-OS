@@ -26,8 +26,9 @@ ld_script_builder = Builder(action = Action(
     '$CC $_CCCOMCOM $ASFLAGS -E -x c $SOURCE | grep -v "^\#" > $TARGET',
     '$GENCOMSTR'))
 
-# Custom method to build a Infi application.
+# Custom method to build a Pulsar application.
 def infi_application_method(env, name, sources, **kwargs):
+    print name + '\n'
     flags = kwargs['flags'] if 'flags' in kwargs else {}
 
     target = File(name)

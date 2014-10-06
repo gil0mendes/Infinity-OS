@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Alex Smith
+ * Copyright (C) 2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -283,9 +283,9 @@ int main(int argc, char **argv) {
 
 		ret = kern_fs_curr_dir(buf, FS_PATH_MAX);
 		if(ret == STATUS_SUCCESS) {
-			printf("Infi:%s> ", buf);
+			printf("Pulsar:%s> ", buf);
 		} else {
-			printf("Infi> ");
+			printf("Pulsar> ");
 		}
 
 		std::string line;

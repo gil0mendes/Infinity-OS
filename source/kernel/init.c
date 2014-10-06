@@ -231,11 +231,12 @@ static void init_thread(void *arg1, void *arg2) {
 
 	update_boot_progress(20);
 
-	/* Run the service manager. */
+	/* Run the shell program. */
 	ret = process_create(pargs, penv, PROCESS_CREATE_CRITICAL,
 		PRIORITY_CLASS_SYSTEM, NULL);
-	if(ret != STATUS_SUCCESS)
+	if(ret != STATUS_SUCCESS) {
 		fatal("Could not start service manager (%d)", ret);
+	}
 }
 
 /** Iterate over the LAOS tag list.

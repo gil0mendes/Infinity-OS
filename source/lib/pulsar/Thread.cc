@@ -59,9 +59,14 @@ struct pulsar::ThreadPrivate
  */
 Thread::Thread(handle_t handle) : m_priv(new ThreadPrivate)
 {
+    unsigned type;
+    status_t ret;
+
 	if(handle >= 0) 
 	{
-		if(unlikely(kern_object_type(handle) != OBJECT_TYPE_THREAD)) 
+        ret = kern_object_type(handle, &type);
+
+		if(ret != STATUS_SUCCESS || type != OBJECT_TYPE_THREAD)
 		{
 			libpulsar_fatal("Thread::Thread: Handle must refer to a thread object.");
 		}

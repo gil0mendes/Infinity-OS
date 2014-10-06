@@ -703,13 +703,14 @@ __init_text void object_init(void) {
 /**
 * Get the type of an object referred to by a handle.
 *
-* @param handle	Handle to object.
+* @param handle	    Handle to object.
+* @param typep      Where to store object type.
 *
-* @return		Type ID of object on success, -1 if the handle was not
-*			    found.
+* @return		    Type ID of object on success, -1 if the handle was not
+*			        found.
 */
 status_t
-kern_object_type(handle_t handle)
+kern_object_type(handle_t handle, unsigned *typep)
 {
 	object_handle_t *khandle;
     status_t ret;

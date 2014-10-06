@@ -32,25 +32,27 @@ extern "C" {
 
 /** Arguments passed to the userspace loader. */
 typedef struct process_args {
-	char *path;			    /**< Path to program. */
+	char *path;			/**< Path to program. */
 	char **args;			/**< Argument array. */
-	char **env;			    /**< Environment variable array. */
+	char **env;			/**< Environment variable array. */
 	size_t arg_count;		/**< Number of entries in argument array (excluding NULL). */
 	size_t env_count;		/**< Number of entries in environment array (excluding NULL). */
-	void *load_base;        /**< Load base of libkernel */
+	void *load_base;		/**< Load base of libkernel. */
 } process_args_t;
 
 /** Actions for kern_process_control(). */
-#define PROCESS_LOADED		    1	/**< Signal that process is loaded. */
-#define PROCESS_SET_RESTORE     2   /**< Set the thread restore function */
+#define PROCESS_LOADED		1	/**< Signal that process is loaded. */
+#define PROCESS_SET_RESTORE	2	/**< Set the thread restore function. */
 
 extern status_t kern_process_control(unsigned action, const void *in, void *out);
 
 #ifdef __LIBKERNEL
+
 extern status_t _kern_process_clone(handle_t *handlep);
 extern process_id_t _kern_process_id(handle_t handle);
-#endif // __LIBKERNEL
-#endif // __KERNEL_PRIVATE
+
+#endif /* __LIBKERNEL */
+#endif /* __KERNEL_PRIVATE */
 
 #ifdef __cplusplus
 }

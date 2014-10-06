@@ -71,14 +71,9 @@ static void shutdown_thread_entry(void *_action, void *arg2) {
 	arch_cpu_halt();
 }
 
-/**
-* Shut down the system.
-*
-* @param action	Action to perform once the system has been shut down.
-*/
-void
-system_shutdown(unsigned action)
-{
+/** Shut down the system.
+ * @param action	Action to perform once the system has been shut down. */
+void system_shutdown(unsigned action) {
 	status_t ret;
 
 	if(!shutdown_in_progress) {
@@ -118,9 +113,7 @@ system_shutdown(unsigned action)
  *
  * @return		Status code describing result of the operation.
  */
-status_t
-kern_system_shutdown(unsigned action)
-{
+status_t kern_system_shutdown(unsigned action) {
 	system_shutdown(action);
 	fatal("Shouldn't get here");
 }

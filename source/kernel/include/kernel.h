@@ -37,7 +37,7 @@ extern notifier_t fatal_notifier;
 extern bool shutdown_in_progress;
 
 /** Version information for the kernel, defined in a build-generated file. */
-extern int pulsar_ver_release;		/**< Pulsar release number. */
+extern int pulsar_ver_release;		/**< Kiwi release number. */
 extern int pulsar_ver_update;		/**< Release update number. */
 extern int pulsar_ver_revision;		/**< Release revision number. */
 extern const char *pulsar_ver_string;	/**< String of version number. */

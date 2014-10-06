@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2014 Gil Mendes
+ * Copyright (C) 2011 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -84,6 +84,6 @@ static inline int64_t atomic_dec64(atomic64_t *var) {
 	return atomic_sub64(var, 1);
 }
 
-#endif // CONFIG_64BIT
+#endif /* CONFIG_64BIT */
 
-#endif // __LIB_ATOMIC_H
+#endif /* __LIB_ATOMIC_H */

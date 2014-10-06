@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Alex Smith
+ * Copyright (C) 2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		POSIX signal send functions.
-*/
+ * @file
+ * @brief		POSIX signal send functions.
+ */
 
 #include <errno.h>
 #include <signal.h>
@@ -25,18 +25,18 @@
 #include "libsystem.h"
 
 /** Send a signal to a process.
-* @param pid		ID of process.
-* @param num		Signal number.
-* @return		0 on success, -1 on failure. */
+ * @param pid		ID of process.
+ * @param num		Signal number.
+ * @return		0 on success, -1 on failure. */
 int kill(pid_t pid, int num) {
-    libsystem_stub("raise", true);
-    return -1;
+	libsystem_stub("raise", true);
+	return -1;
 }
 
 /** Send a signal to the current process.
-* @param num		Signal number.
-* @return		0 on success, -1 on failure. */
+ * @param num		Signal number.
+ * @return		0 on success, -1 on failure. */
 int raise(int num) {
-    libsystem_stub("raise", true);
-    return -1;
+	libsystem_stub("raise", true);
+	return -1;
 }

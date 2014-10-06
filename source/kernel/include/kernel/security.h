@@ -36,9 +36,9 @@ extern "C" {
 
 /** Definitions of privileges. */
 #define PRIV_SHUTDOWN			0	/**< Ability to shut down the system. */
-#define PRIV_FATAL			    1	/**< Ability to halt the kernel with a fatal error. */
-#define PRIV_MODULE			    2	/**< Ability to load/unload kernel modules. */
-#define PRIV_CHANGE_IDENTITY	3	/**< Ability to change user/group IDs. */
+#define PRIV_FATAL			1	/**< Ability to halt the kernel with a fatal error. */
+#define PRIV_MODULE			2	/**< Ability to load/unload kernel modules. */
+#define PRIV_CHANGE_IDENTITY		3	/**< Ability to change user/group IDs. */
 #define PRIV_CHANGE_OWNER		4	/**< Ability to set object user/group to arbitrary IDs. */
 #define PRIV_FS_ADMIN			5	/**< Ability to bypass access checks on the filesystem. */
 #define PRIV_FS_SETROOT			6	/**< Ability to use the fs_setroot() system call. */

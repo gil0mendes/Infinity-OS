@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		Internal thread functions/definitions.
-*/
+ * @file
+ * @brief		Internal thread functions/definitions.
+ */
 
 #ifndef __KERNEL_PRIVATE_THREAD_H
 #define __KERNEL_PRIVATE_THREAD_H
@@ -34,6 +34,7 @@ extern "C" {
 #define THREAD_SET_TLS_ADDR	1	/**< Set TLS base address. */
 
 extern status_t kern_thread_control(unsigned action, const void *in, void *out);
+extern void kern_thread_restore(void);
 
 #ifdef __LIBKERNEL
 
@@ -41,10 +42,9 @@ extern status_t _kern_thread_create(const char *name, thread_entry_t *entry,
 	uint32_t flags, handle_t *handlep);
 extern thread_id_t _kern_thread_id(handle_t handle);
 extern void _kern_thread_exit(int status) __attribute__((noreturn));
-extern void kern_thread_restore(void);
 
-#endif // __LIBKERNEL
-#endif // __KERNEL_PRIVATE
+#endif /* __LIBKERNEL */
+#endif /* __KERNEL_PRIVATE */
 
 #ifdef __cplusplus
 }

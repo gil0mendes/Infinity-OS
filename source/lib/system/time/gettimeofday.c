@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Alex Smith
+ * Copyright (C) 2010-2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -23,16 +23,11 @@
 #include <sys/time.h>
 #include <errno.h>
 
-/**
- * Get the current time.
- *
+/** Get the current time.
  * @param tv		Structure to fill with time since epoch.
  * @param tz		Pointer to timezone (ignored).
- * @return		0 on success, -1 on failure.
- */
-int
-gettimeofday(struct timeval *tv, void *tz)
-{
+ * @return		0 on success, -1 on failure. */
+int gettimeofday(struct timeval *tv, void *tz) {
 	nstime_t ktime;
 
 	kern_time_get(TIME_REAL, &ktime);

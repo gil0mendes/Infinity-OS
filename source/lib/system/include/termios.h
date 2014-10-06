@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Alex Smith
+ * Copyright (C) 2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -22,7 +22,7 @@
 #ifndef __TERMIOS_H
 #define __TERMIOS_H
 
-# include <sys/types.h>
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {

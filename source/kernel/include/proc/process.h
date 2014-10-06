@@ -70,20 +70,20 @@ typedef struct process {
 	int priority;			/**< Priority class of the process. */
 
 	/** Resource information. */
-	token_t *token;			    /**< Security token for the process. */
+	token_t *token;			/**< Security token for the process. */
 	struct vm_aspace *aspace;	/**< Process' address space. */
 	handle_table_t handles;		/**< Table of open handles. */
-	io_context_t ioctx;		    /**< I/O context structure. */
-	list_t threads;			    /**< List of threads. */
-	avl_tree_t futexes;		    /**< Tree of futexes that the process has accessed. */
-	list_t images;			    /**< List of loaded images. */
+	io_context_t ioctx;		/**< I/O context structure. */
+	list_t threads;			/**< List of threads. */
+	avl_tree_t futexes;		/**< Tree of futexes that the process has accessed. */
+	list_t images;			/**< List of loaded images. */
 	image_id_t next_image_id;	/**< Next image ID. */
-  ptr_t thread_restore;       /**< Address of kern_thread_restore(). */
+	ptr_t thread_restore;		/**< Address of kern_thread_restore() in libkernel. */
 
 	/** Exception handler table. */
 	exception_handler_t exceptions[EXCEPTION_MAX];
 
-  /** Special ports. */
+	/** Special ports. */
 	struct ipc_port *root_port;	/**< Root port. */
 
 	/** State of the process. */

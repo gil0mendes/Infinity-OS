@@ -28,14 +28,14 @@
 extern "C" {
 #endif
 
-// System information values
-#define SYSTEM_INFO_PAGE_SIZE   1   // System page size (unsigned long)
+/** System information values. */
+#define SYSTEM_INFO_PAGE_SIZE	1	/**< System page size (unsigned long). */
 
 extern status_t kern_system_info(unsigned what, void *buf);
 
-// Actions for kern_shutdown()
-#define SHUTDOWN_REBOOT		1	// Reboot the system
-#define SHUTDOWN_POWEROFF	2	// Power off the system
+/** Actions for kern_shutdown(). */
+#define SHUTDOWN_REBOOT		1	/**< Reboot the system. */
+#define SHUTDOWN_POWEROFF	2	/**< Power off the system. */
 
 extern status_t kern_system_shutdown(unsigned action);
 extern void kern_system_fatal(const char *message);

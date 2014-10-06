@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Alex Smith
+ * Copyright (C) 2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		Signal mask function.
-*/
+ * @file
+ * @brief		Signal mask function.
+ */
 
 #include <errno.h>
 #include <signal.h>
@@ -25,11 +25,11 @@
 #include "libsystem.h"
 
 /** Set the signal mask.
-* @param how		How to set the mask.
-* @param set		Signal set to mask (can be NULL).
-* @param oset		Where to store previous masked signal set (can be NULL).
-* @return		0 on success, -1 on failure. */
+ * @param how		How to set the mask.
+ * @param set		Signal set to mask (can be NULL).
+ * @param oset		Where to store previous masked signal set (can be NULL).
+ * @return		0 on success, -1 on failure. */
 int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset) {
-    libsystem_stub("sigprocmask", false);
-    return -1;
+	libsystem_stub("sigprocmask", false);
+	return -1;
 }

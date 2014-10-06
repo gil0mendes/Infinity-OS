@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Alex Smith
+ * Copyright (C) 2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -38,13 +38,13 @@ static inline object_rights_t mode_to_rights(uint16_t mode) {
 	object_rights_t rights = 0;
 
 	if(mode & S_IROTH) {
-		rights |= FILE_ACCESS_READ;
+		rights |= FILE_RIGHT_READ;
 	}
 	if(mode & S_IWOTH) {
-		rights |= FILE_ACCESS_WRITE;
+		rights |= FILE_RIGHT_WRITE;
 	}
 	if(mode & S_IXOTH) {
-		rights |= FILE_ACCESS_EXECUTE;
+		rights |= FILE_RIGHT_EXECUTE;
 	}
 	return rights;
 }

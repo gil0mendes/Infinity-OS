@@ -20,9 +20,9 @@
 
 # Release information
 version = {
-	'INFI_VER_RELEASE':  1,
-	'INFI_VER_UPDATE':   0,
-	'INFI_VER_REVISION': 0,
+	'PULSAR_VER_RELEASE':  1,
+	'PULSAR_VER_UPDATE':   0,
+	'PULSAR_VER_REVISION': 0,
 }
 
 # C/C++ warning flags.
@@ -72,14 +72,14 @@ from util import RequireTarget
 import vcs
 
 # Set the version string.
-version['INFI_VER_STRING'] = '%d.%d' % (
-	version['INFI_VER_RELEASE'],
-	version['INFI_VER_UPDATE'])
-if version['INFI_VER_REVISION']:
-	version['INFI_VER_STRING'] += '.%d' % (version['INFI_VER_REVISION'])
+version['PULSAR_VER_STRING'] = '%d.%d' % (
+	version['PULSAR_VER_RELEASE'],
+	version['PULSAR_VER_UPDATE'])
+if version['PULSAR_VER_REVISION']:
+	version['PULSAR_VER_STRING'] += '.%d' % (version['PULSAR_VER_REVISION'])
 revision = vcs.revision_id()
 if revision:
-	version['INFI_VER_STRING'] += '-%s' % (revision)
+	version['PULSAR_VER_STRING'] += '-%s' % (revision)
 
 # Change the Decider to MD5-timestamp to speed up the build a bit.
 Decider('MD5-timestamp')
@@ -109,7 +109,7 @@ env = manager.CreateHost(name = 'host')
 SConscript('utilities/SConscript', variant_dir = os.path.join('build', 'host'), exports = ['env'])
 
 # Add targets to run the configuration interface
-env['ENV']['KERNELVERSION'] = version['INFI_VER_STRING']
+env['ENV']['KERNELVERSION'] = version['PULSAR_VER_STRING']
 Alias('config', env.ConfigMenu('__config', ['Kconfig']))
 
 # If the configuration does not exist, all we can do is configure. Raise an

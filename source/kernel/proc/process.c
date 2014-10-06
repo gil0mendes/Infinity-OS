@@ -64,7 +64,7 @@
 #ifdef DEBUG_PROCESS
 # define dprintf(fmt...)	kprintf(LOG_DEBUG, fmt)
 #else
-# define dprintf(fmt...)
+# define dprintf(fmt...)	
 #endif
 
 /** Expected path to libkernel. */
@@ -1585,9 +1585,7 @@ status_t kern_process_set_token(handle_t handle) {
  *			STATUS_INVALID_ARG if code is invalid.
  *			STATUS_INVALID_ADDR if handler is an invalid address.
  */
-status_t
-kern_process_set_exception(unsigned code, exception_handler_t handler)
-{
+status_t kern_process_set_exception(unsigned code, exception_handler_t handler) {
 	if(code >= EXCEPTION_MAX) {
 		return STATUS_INVALID_ARG;
 	} else if(handler && !is_user_address(handler)) {

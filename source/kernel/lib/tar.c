@@ -40,11 +40,11 @@ static inline object_rights_t mode_to_rights(uint16_t mode) {
 	object_rights_t rights = 0;
 
 	if(mode & TOREAD)
-		rights |= FILE_ACCESS_READ;
+		rights |= FILE_RIGHT_READ;
 	if(mode & TOWRITE)
-		rights |= FILE_ACCESS_WRITE;
+		rights |= FILE_RIGHT_WRITE;
 	if(mode & TOEXEC)
-		rights |= FILE_ACCESS_EXECUTE;
+		rights |= FILE_RIGHT_EXECUTE;
 
 	return rights;
 }

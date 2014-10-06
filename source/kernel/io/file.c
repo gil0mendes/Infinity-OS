@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Gil Mendes
+ * Copyright (C) 2013-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -87,7 +87,7 @@ static void file_object_unwait(object_handle_t *handle, unsigned event, void *wa
  * @return		Status code describing result of the operation. */
 static status_t file_object_map(object_handle_t *handle, vm_region_t *region) {
 	file_handle_t *fhandle = handle->private;
-	uint32_t rights = 0;
+	uint32_t access = 0;
 
 	/* Directories cannot be memory-mapped. */
 	if(fhandle->file->type == FILE_TYPE_DIR || !fhandle->file->ops->map)
@@ -95,15 +95,15 @@ static status_t file_object_map(object_handle_t *handle, vm_region_t *region) {
 
 	/* Check for the necessary access rights. Don't need write permission
 	 * for private mappings, changes won't be written back to the file. */
-	if(region->protection & VM_ACCESS_READ) {
-		rights |= FILE_ACCESS_READ;
-	} else if(region->protection & VM_ACCESS_WRITE && !(region->flags & VM_MAP_PRIVATE)) {
-		rights |= FILE_ACCESS_WRITE;
-	} else if(region->protection & VM_ACCESS_EXECUTE) {
-		rights |= FILE_ACCESS_EXECUTE;
+	if(region->access & VM_ACCESS_READ) {
+		access |= FILE_ACCESS_READ;
+	} else if(region->access & VM_ACCESS_WRITE && !(region->flags & VM_MAP_PRIVATE)) {
+		access |= FILE_ACCESS_WRITE;
+	} else if(region->access & VM_ACCESS_EXECUTE) {
+		access |= FILE_ACCESS_EXECUTE;
 	}
 
-	if((fhandle->rights & rights) != rights)
+	if((fhandle->access & access) != access)
 		return STATUS_ACCESS_DENIED;
 
 	return fhandle->file->ops->map(fhandle, region);
@@ -124,30 +124,30 @@ static object_type_t file_object_type = {
  * Check for access to a file.
  *
  * Checks the current thread's security context against a file's ACL to
- * determine whether that it has the specified rights to the file.
+ * determine whether that it has the specified access rights to the file.
  *
  * @param file		File to check.
- * @param rights	Rights to check for.
+ * @param access	Access rights to check for.
  *
  * @return		Whether the thread is allowed the access.
  */
-bool file_access(file_t *file, uint32_t rights) {
+bool file_access(file_t *file, uint32_t access) {
 	// TODO
 	return true;
 }
 
 /** Allocate a new file handle structure.
  * @param file		File that handle is to.
- * @param rights	Rights for the handle.
+ * @param access	Access rights for the handle.
  * @param flags		Flags for the handle.
  * @return		Pointer to allocated structure. */
-file_handle_t *file_handle_alloc(file_t *file, uint32_t rights, uint32_t flags) {
+file_handle_t *file_handle_alloc(file_t *file, uint32_t access, uint32_t flags) {
 	file_handle_t *fhandle;
 
 	fhandle = kmalloc(sizeof(*fhandle), MM_KERNEL);
 	mutex_init(&fhandle->lock, "file_handle_lock", 0);
 	fhandle->file = file;
-	fhandle->rights = rights;
+	fhandle->access = access;
 	fhandle->flags = flags;
 	fhandle->private = NULL;
 	fhandle->offset = 0;
@@ -180,7 +180,7 @@ static inline bool is_seekable(file_t *file) {
  * @return		Status code describing result of the operation. */
 static status_t file_io(object_handle_t *handle, io_request_t *request) {
 	file_handle_t *fhandle;
-	uint32_t right;
+	uint32_t access;
 	bool update_offset = false;
 	file_info_t info;
 	status_t ret;
@@ -192,8 +192,8 @@ static status_t file_io(object_handle_t *handle, io_request_t *request) {
 
 	fhandle = handle->private;
 
-	right = (request->op == IO_OP_WRITE) ? FILE_ACCESS_WRITE : FILE_ACCESS_READ;
-	if(!(fhandle->rights & right)) {
+	access = (request->op == IO_OP_WRITE) ? FILE_ACCESS_WRITE : FILE_ACCESS_READ;
+	if(!(fhandle->access & access)) {
 		ret = STATUS_ACCESS_DENIED;
 		goto out;
 	}
@@ -267,8 +267,9 @@ out:
  *
  * @return		Status code describing result of the operation.
  */
-status_t file_read(object_handle_t *handle, void *buf, size_t size,
-	offset_t offset, size_t *bytesp)
+status_t
+file_read(object_handle_t *handle, void *buf, size_t size, offset_t offset,
+	size_t *bytesp)
 {
 	io_vec_t vec;
 	io_request_t request;
@@ -280,8 +281,7 @@ status_t file_read(object_handle_t *handle, void *buf, size_t size,
 	vec.buffer = buf;
 	vec.size = size;
 
-	ret = io_request_init(&request, &vec, 1, offset, IO_OP_READ,
-		IO_TARGET_KERNEL);
+	ret = io_request_init(&request, &vec, 1, offset, IO_OP_READ, IO_TARGET_KERNEL);
 	if(ret != STATUS_SUCCESS)
 		return ret;
 
@@ -316,7 +316,8 @@ status_t file_read(object_handle_t *handle, void *buf, size_t size,
  *
  * @return		Status code describing result of the operation.
  */
-status_t file_write(object_handle_t *handle, const void *buf, size_t size,
+status_t
+file_write(object_handle_t *handle, const void *buf, size_t size,
 	offset_t offset, size_t *bytesp)
 {
 	io_vec_t vec;
@@ -329,8 +330,7 @@ status_t file_write(object_handle_t *handle, const void *buf, size_t size,
 	vec.buffer = (void *)buf;
 	vec.size = size;
 
-	ret = io_request_init(&request, &vec, 1, offset, IO_OP_WRITE,
-		IO_TARGET_KERNEL);
+	ret = io_request_init(&request, &vec, 1, offset, IO_OP_WRITE, IO_TARGET_KERNEL);
 	if(ret != STATUS_SUCCESS)
 		return ret;
 
@@ -363,16 +363,16 @@ status_t file_write(object_handle_t *handle, const void *buf, size_t size,
  *
  * @return		Status code describing result of the operation.
  */
-status_t file_read_vecs(object_handle_t *handle, const io_vec_t *vecs,
-	size_t count, offset_t offset, size_t *bytesp)
+status_t
+file_read_vecs(object_handle_t *handle, const io_vec_t *vecs, size_t count,
+	offset_t offset, size_t *bytesp)
 {
 	io_request_t request;
 	status_t ret;
 
 	assert(handle);
 
-	ret = io_request_init(&request, vecs, count, offset, IO_OP_READ,
-		IO_TARGET_KERNEL);
+	ret = io_request_init(&request, vecs, count, offset, IO_OP_READ, IO_TARGET_KERNEL);
 	if(ret != STATUS_SUCCESS)
 		return ret;
 
@@ -406,16 +406,16 @@ status_t file_read_vecs(object_handle_t *handle, const io_vec_t *vecs,
  *
  * @return		Status code describing result of the operation.
  */
-status_t file_write_vecs(object_handle_t *handle, const io_vec_t *vecs,
-	size_t count, offset_t offset, size_t *bytesp)
+status_t
+file_write_vecs(object_handle_t *handle, const io_vec_t *vecs, size_t count,
+	offset_t offset, size_t *bytesp)
 {
 	io_request_t request;
 	status_t ret;
 
 	assert(handle);
 
-	ret = io_request_init(&request, vecs, count, offset, IO_OP_WRITE,
-		IO_TARGET_KERNEL);
+	ret = io_request_init(&request, vecs, count, offset, IO_OP_WRITE, IO_TARGET_KERNEL);
 	if(ret != STATUS_SUCCESS)
 		return ret;
 
@@ -460,7 +460,7 @@ status_t file_read_dir(object_handle_t *handle, dir_entry_t *buf, size_t size) {
 
 	fhandle = handle->private;
 
-	if(!(fhandle->rights & FILE_ACCESS_READ)) {
+	if(!(fhandle->access & FILE_ACCESS_READ)) {
 		return STATUS_ACCESS_DENIED;
 	} else if(fhandle->file->type != FILE_TYPE_DIR) {
 		return STATUS_NOT_DIR;
@@ -498,7 +498,7 @@ status_t file_rewind_dir(object_handle_t *handle) {
 
 	fhandle = handle->private;
 
-	if(!(fhandle->rights & FILE_ACCESS_READ)) {
+	if(!(fhandle->access & FILE_ACCESS_READ)) {
 		return STATUS_ACCESS_DENIED;
 	} else if(fhandle->file->type != FILE_TYPE_DIR) {
 		return STATUS_NOT_DIR;
@@ -512,10 +512,19 @@ status_t file_rewind_dir(object_handle_t *handle) {
 	return STATUS_SUCCESS;
 }
 
-/** Get a file handle's rights.
- * @param handle	Handle to get flags from.
- * @param rightsp	Where to store handle rights. */
-status_t file_rights(object_handle_t *handle, uint32_t *rightsp) {
+/** Get file handle state.
+ * @param handle	Handle to get state for.
+ * @param accessp	Where to store access rights (optional).
+ * @param flagsp	Where to store handle flags (optional).
+ * @param offsetp	Where to store current offset (optional).
+ * @return		STATUS_SUCCESS on success.
+ *			STATUS_INVALID_HANDLE if handle is not a file.
+ *			STATUS_NOT_SUPPORTED if attempting to retrieve current
+ *			offset and the file is not seekable. */
+status_t
+file_state(object_handle_t *handle, uint32_t *accessp, uint32_t *flagsp,
+	offset_t *offsetp)
+{
 	file_handle_t *fhandle;
 
 	assert(handle);
@@ -524,29 +533,26 @@ status_t file_rights(object_handle_t *handle, uint32_t *rightsp) {
 		return STATUS_INVALID_HANDLE;
 
 	fhandle = handle->private;
-	*rightsp = fhandle->rights;
-	return STATUS_SUCCESS;
-}
 
-/** Get a file handle's flags.
- * @param handle	Handle to get flags from.
- * @param flagsp	Where to store handle flags. */
-status_t file_flags(object_handle_t *handle, uint32_t *flagsp) {
-	file_handle_t *fhandle;
+	if(accessp)
+		*accessp = fhandle->access;
+	if(flagsp)
+		*flagsp = fhandle->flags;
+	if(offsetp) {
+		if(!is_seekable(fhandle->file))
+			return STATUS_NOT_SUPPORTED;
 
-	assert(handle);
+		*offsetp = fhandle->offset;
+	}
 
-	if(handle->type->id != OBJECT_TYPE_FILE)
-		return STATUS_INVALID_HANDLE;
-
-	fhandle = handle->private;
-	*flagsp = fhandle->flags;
 	return STATUS_SUCCESS;
 }
 
 /** Set a file handle's flags.
  * @param handle	Handle to set flags for.
- * @param flags		New flags to set. */
+ * @param flags		New flags to set.
+ * @return		STATUS_SUCCESS on success.
+ *			STATUS_INVALID_HANDLE if handle is not a file. */
 status_t file_set_flags(object_handle_t *handle, uint32_t flags) {
 	file_handle_t *fhandle;
 
@@ -555,6 +561,8 @@ status_t file_set_flags(object_handle_t *handle, uint32_t flags) {
 	if(handle->type->id != OBJECT_TYPE_FILE)
 		return STATUS_INVALID_HANDLE;
 
+	/* TODO: We'll need an underlying FS call for certain flag changes, e.g.
+	 * FILE_DIRECT. */
 	fhandle = handle->private;
 	fhandle->flags = flags;
 	return STATUS_SUCCESS;
@@ -574,7 +582,8 @@ status_t file_set_flags(object_handle_t *handle, uint32_t flags) {
  *
  * @return		Status code describing result of the operation.
  */
-status_t file_seek(object_handle_t *handle, unsigned action, offset_t offset,
+status_t
+file_seek(object_handle_t *handle, unsigned action, offset_t offset,
 	offset_t *resultp)
 {
 	file_handle_t *fhandle;
@@ -630,8 +639,8 @@ status_t file_seek(object_handle_t *handle, unsigned action, offset_t offset,
  * size of the file, then the extra data is discarded. If it is larger than the
  * previous size, then the extended space will be filled with zero bytes.
  *
- * @param handle	Handle to file to resize. Must have the FILE_ACCESS_WRITE
- *			access right.
+ * @param handle	Handle to file to resize. Must have the
+ *			FILE_ACCESS_WRITE access right.
  * @param size		New size of the file.
  *
  * @return		Status code describing result of the operation.
@@ -646,7 +655,7 @@ status_t file_resize(object_handle_t *handle, offset_t size) {
 
 	fhandle = handle->private;
 
-	if(!(fhandle->rights & FILE_ACCESS_WRITE)) {
+	if(!(fhandle->access & FILE_ACCESS_WRITE)) {
 		return STATUS_ACCESS_DENIED;
 	} else if(fhandle->file->type != FILE_TYPE_REGULAR) {
 		return STATUS_NOT_REGULAR;
@@ -697,6 +706,10 @@ status_t file_sync(object_handle_t *handle) {
 }
 
 /**
+ * System calls.
+ */
+
+/**
  * Read from a file.
  *
  * Reads data from a file into a buffer. If the specified offset is greater
@@ -718,7 +731,8 @@ status_t file_sync(object_handle_t *handle) {
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_file_read(handle_t handle, void *buf, size_t size, offset_t offset,
+status_t
+kern_file_read(handle_t handle, void *buf, size_t size, offset_t offset,
 	size_t *bytesp)
 {
 	object_handle_t *khandle;
@@ -782,8 +796,9 @@ out:
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_file_write(handle_t handle, const void *buf, size_t size,
-	offset_t offset, size_t *bytesp)
+status_t
+kern_file_write(handle_t handle, const void *buf, size_t size, offset_t offset,
+	size_t *bytesp)
 {
 	object_handle_t *khandle;
 	io_vec_t vec;
@@ -844,7 +859,8 @@ out:
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_file_read_vecs(handle_t handle, const io_vec_t *vecs, size_t count,
+status_t
+kern_file_read_vecs(handle_t handle, const io_vec_t *vecs, size_t count,
 	offset_t offset, size_t *bytesp)
 {
 	object_handle_t *khandle;
@@ -919,7 +935,8 @@ out:
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_file_write_vecs(handle_t handle, const io_vec_t *vecs, size_t count,
+status_t
+kern_file_write_vecs(handle_t handle, const io_vec_t *vecs, size_t count,
 	offset_t offset, size_t *bytesp)
 {
 	object_handle_t *khandle;
@@ -1036,48 +1053,54 @@ status_t kern_file_rewind_dir(handle_t handle) {
 	return ret;
 }
 
-/** Get a file handle's rights.
- * @param handle	Handle to get rights from.
- * @param rightsp	Where to store handle rights. */
-status_t kern_file_rights(handle_t handle, uint32_t *rightsp) {
+/** Get file handle state.
+ * @param handle	Handle to get state for.
+ * @param accessp	Where to store access rights (optional).
+ * @param flagsp	Where to store handle flags (optional).
+ * @param offsetp	Where to store current offset (optional).
+ * @return		STATUS_SUCCESS on success.
+ *			STATUS_INVALID_HANDLE if handle is not a file.
+ *			STATUS_NOT_SUPPORTED if attempting to retrieve current
+ *			offset and the file is not seekable. */
+status_t
+kern_file_state(handle_t handle, uint32_t *accessp, uint32_t *flagsp,
+	offset_t *offsetp)
+{
 	object_handle_t *khandle;
-	uint32_t rights;
+	uint32_t access, flags;
+	offset_t offset;
 	status_t ret;
 
-	if(!rightsp)
+	if(!accessp && !flagsp && !offsetp)
 		return STATUS_INVALID_ARG;
 
 	ret = object_handle_lookup(handle, OBJECT_TYPE_FILE, &khandle);
 	if(ret != STATUS_SUCCESS)
 		return ret;
 
-	ret = file_rights(khandle, &rights);
-	if(ret == STATUS_SUCCESS)
-		ret = write_user(rightsp, rights);
-
-	object_handle_release(khandle);
-	return ret;
-}
-
-/** Get a file handle's flags.
- * @param handle	Handle to get flags from.
- * @param flagsp	Where to store handle flags. */
-status_t kern_file_flags(handle_t handle, uint32_t *flagsp) {
-	object_handle_t *khandle;
-	uint32_t flags;
-	status_t ret;
-
-	if(!flagsp)
-		return STATUS_INVALID_ARG;
-
-	ret = object_handle_lookup(handle, OBJECT_TYPE_FILE, &khandle);
+	ret = file_state(khandle, &access, &flags, (offsetp) ? &offset : NULL);
 	if(ret != STATUS_SUCCESS)
-		return ret;
+		goto out;
 
-	ret = file_flags(khandle, &flags);
-	if(ret == STATUS_SUCCESS)
+	if(accessp) {
+		ret = write_user(accessp, access);
+		if(ret != STATUS_SUCCESS)
+			goto out;
+	}
+
+	if(flagsp) {
 		ret = write_user(flagsp, flags);
+		if(ret != STATUS_SUCCESS)
+			goto out;
+	}
 
+	if(offsetp) {
+		ret = write_user(offsetp, offset);
+		if(ret != STATUS_SUCCESS)
+			goto out;
+	}
+
+out:
 	object_handle_release(khandle);
 	return ret;
 }
@@ -1112,7 +1135,8 @@ status_t kern_file_set_flags(handle_t handle, uint32_t flags) {
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_file_seek(handle_t handle, unsigned action, offset_t offset,
+status_t
+kern_file_seek(handle_t handle, unsigned action, offset_t offset,
 	offset_t *resultp)
 {
 	object_handle_t *khandle;
@@ -1138,8 +1162,8 @@ status_t kern_file_seek(handle_t handle, unsigned action, offset_t offset,
  * size of the file, then the extra data is discarded. If it is larger than the
  * previous size, then the extended space will be filled with zero bytes.
  *
- * @param handle	Handle to file to resize. Must have the FILE_ACCESS_WRITE
- *			access right.
+ * @param handle	Handle to file to resize. Must have the
+ *			FILE_ACCESS_WRITE access right.
  * @param size		New size of the file.
  *
  * @return		Status code describing result of the operation.

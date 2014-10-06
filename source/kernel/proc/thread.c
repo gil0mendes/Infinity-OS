@@ -92,7 +92,7 @@
 #ifdef DEBUG_THREAD
 # define dprintf(fmt...)	kprintf(LOG_DEBUG, fmt)
 #else
-# define dprintf(fmt...)
+# define dprintf(fmt...)	
 #endif
 
 /** Thread creation arguments structure, for thread_uspace_trampoline(). */

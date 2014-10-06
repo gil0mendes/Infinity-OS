@@ -15,7 +15,7 @@
 #
 
 config SYS_SUPPORTS_SMP
-    bool
+	bool
 
 config SMP
 	depends on SYS_SUPPORTS_SMP

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2014 Gil Mendes
+ * Copyright (C) 2008-2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -293,11 +293,8 @@ FUNCTION_START(syscall_entry)
 	jmp	.Lreturn
 FUNCTION_END(syscall_entry)
 
-/**
- * Enter user mode in the current thread.
- *
- * @param frame		Previously prepared frame.
- */
+/** Enter user mode in the current thread.
+ * @param frame		Previously prepared frame. */
 FUNCTION_START(arch_thread_user_enter)
 	/* Point SP at the frame to restore. */
 	movq	%rdi, %rsp

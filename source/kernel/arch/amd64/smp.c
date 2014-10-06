@@ -68,7 +68,8 @@ __init_text void x86_smp_boot_prepare(void) {
 	 * identity maps the bootstrap code at its physical location. */
 	ap_mmu_context = mmu_context_create(MM_BOOT);
 	mmu_context_lock(ap_mmu_context);
-	mmu_context_map(ap_mmu_context, (ptr_t)ap_bootstrap_page, ap_bootstrap_page,
+	mmu_context_map(ap_mmu_context, (ptr_t)ap_bootstrap_page,
+		ap_bootstrap_page,
 		VM_ACCESS_READ | VM_ACCESS_WRITE | VM_ACCESS_EXECUTE, MM_BOOT);
 	mmu_context_unlock(ap_mmu_context);
 }

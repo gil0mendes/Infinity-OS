@@ -63,20 +63,20 @@ typedef void (*exception_handler_t)(exception_info_t *info,
 	struct thread_state *state);
 
 /** Exception codes. */
-#define EXCEPTION_ADDR_UNMAPPED				1	/**< Access to non-existant memory mapping. */
-#define EXCEPTION_ACCESS_VIOLATION		2	/**< Violation of mapping access flags. */
-#define EXCEPTION_PAGE_ERROR					3	/**< Error while attempting to load a page. */
-#define EXCEPTION_INVALID_ALIGNMENT		4	/**< Incorrectly aligned access. */
+#define EXCEPTION_ADDR_UNMAPPED		1	/**< Access to non-existant memory mapping. */
+#define EXCEPTION_ACCESS_VIOLATION	2	/**< Violation of mapping access flags. */
+#define EXCEPTION_PAGE_ERROR		3	/**< Error while attempting to load a page. */
+#define EXCEPTION_INVALID_ALIGNMENT	4	/**< Incorrectly aligned access. */
 #define EXCEPTION_INVALID_INSTRUCTION	5	/**< Invalid instruction. */
-#define EXCEPTION_INT_DIV_ZERO				6	/**< Integer division by zero. */
-#define EXCEPTION_INT_OVERFLOW				7	/**< Integer overflow. */
-#define EXCEPTION_FLOAT_DIV_ZERO			8	/**< Floating point division by zero. */
-#define EXCEPTION_FLOAT_OVERFLOW			9	/**< Floating point overflow. */
-#define EXCEPTION_FLOAT_UNDERFLOW			10	/**< Floating point underflow. */
-#define EXCEPTION_FLOAT_RESULT				11	/**< Inexact floating point result. */
-#define EXCEPTION_FLOAT_INVALID				12	/**< Other invalid floating point operation. */
-#define EXCEPTION_BREAKPOINT					13	/**< Breakpoint. */
-#define EXCEPTION_MAX									14
+#define EXCEPTION_INT_DIV_ZERO		6	/**< Integer division by zero. */
+#define EXCEPTION_INT_OVERFLOW		7	/**< Integer overflow. */
+#define EXCEPTION_FLOAT_DIV_ZERO	8	/**< Floating point division by zero. */
+#define EXCEPTION_FLOAT_OVERFLOW	9	/**< Floating point overflow. */
+#define EXCEPTION_FLOAT_UNDERFLOW	10	/**< Floating point underflow. */
+#define EXCEPTION_FLOAT_RESULT		11	/**< Inexact floating point result. */
+#define EXCEPTION_FLOAT_INVALID		12	/**< Other invalid floating point operation. */
+#define EXCEPTION_BREAKPOINT		13	/**< Breakpoint. */
+#define EXCEPTION_MAX			14
 
 #ifdef __cplusplus
 }

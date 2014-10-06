@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		Type definitions.
-*/
+ * @file
+ * @brief		Type definitions.
+ */
 
 #ifndef __TYPES_H
 #define __TYPES_H

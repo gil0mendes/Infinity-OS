@@ -98,7 +98,7 @@ static file_ops_t memory_file_ops = {
  * @param buf		Pointer to memory area to use.
  * @param size		Size of memory area.
  *
- * @return		Pointer to handle to file (has FILE_ACCESS_READ right).
+ * @return		Pointer to handle to file (has FILE_ACCESS_READ set).
  */
 object_handle_t *memory_file_create(const void *buf, size_t size) {
 	memory_file_t *file;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 Alex Smith
+ * Copyright (C) 2008-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -32,13 +32,13 @@ extern "C" {
 #endif
 
 /**
-* Signal number definitions. Values of default action:
-*  - A: Abnormal termination with core dump.
-*  - T: Abnormal termination.
-*  - I: Ignore.
-*  - S: Stop the process.
-*  - C: Continue the process.
-*/
+ * Signal number definitions. Values of default action:
+ *  - A: Abnormal termination with core dump.
+ *  - T: Abnormal termination.
+ *  - I: Ignore.
+ *  - S: Stop the process.
+ *  - C: Continue the process.
+ */
 #define SIGHUP			1	/**< Hangup (T). */
 #define SIGINT			2	/**< Terminal interrupt signal (T). */
 #define SIGQUIT			3	/**< Terminal quit signal (A). */
@@ -72,9 +72,9 @@ typedef volatile int sig_atomic_t;
 
 /** Signal stack information structure. */
 typedef struct stack {
-    void *ss_sp;			/**< Stack base or pointer. */
-    size_t ss_size;			/**< Stack size. */
-    int ss_flags;			/**< Flags. */
+	void *ss_sp;			/**< Stack base or pointer. */
+	size_t ss_size;			/**< Stack size. */
+	int ss_flags;			/**< Flags. */
 } stack_t;
 
 /** Signal stack flags. */
@@ -85,21 +85,21 @@ typedef cpu_context_t mcontext_t;
 
 /** Structure containing a saved context. */
 typedef struct ucontext {
-    struct ucontext *uc_link;	/**< Unused. */
-    sigset_t uc_sigmask;		/**< Signals masked when this context is active. */
-    stack_t uc_stack;		/**< Stack used by this context. */
-    mcontext_t uc_mcontext;		/**< Machine-specific saved context. */
+	struct ucontext *uc_link;	/**< Unused. */
+	sigset_t uc_sigmask;		/**< Signals masked when this context is active. */
+	stack_t uc_stack;		/**< Stack used by this context. */
+	mcontext_t uc_mcontext;		/**< Machine-specific saved context. */
 } ucontext_t;
 
 /** Signal information structure passed to a signal handler. */
 typedef struct siginfo {
-    int si_signo;			/**< Signal number. */
-    int si_code;			/**< Signal code. */
-    int si_errno;			/**< If non-zero, an errno value associated with this signal. */
-    pid_t si_pid;			/**< Sending process ID. */
-    uid_t si_uid;			/**< Real user ID of sending process. */
-    void *si_addr;			/**< Address of faulting instruction. */
-    int si_status;			/**< Exit value or signal. */
+	int si_signo;			/**< Signal number. */
+	int si_code;			/**< Signal code. */
+	int si_errno;			/**< If non-zero, an errno value associated with this signal. */
+	pid_t si_pid;			/**< Sending process ID. */
+	uid_t si_uid;			/**< Real user ID of sending process. */
+	void *si_addr;			/**< Address of faulting instruction. */
+	int si_status;			/**< Exit value or signal. */
 } siginfo_t;
 
 /** Values for siginfo.si_code for any signal. */
@@ -152,17 +152,17 @@ typedef struct siginfo {
 
 /** Structure describing how to handle a signal. */
 typedef struct sigaction {
-    /** Handler function pointers, or one of the above special values. */
-    union {
-        /** Old style signal-handler. */
-        void (*sa_handler)(int);
+	/** Handler function pointers, or one of the above special values. */
+	union {
+		/** Old style signal-handler. */
+		void (*sa_handler)(int);
 
-        /** Extended signal handler for if SA_SIGINFO is set. */
-        void (*sa_sigaction)(int, siginfo_t *, void *);
-    };
+		/** Extended signal handler for if SA_SIGINFO is set. */
+		void (*sa_sigaction)(int, siginfo_t *, void *);
+	};
 
-    sigset_t sa_mask;		/**< Bitmap of signals to block during handler execution. */
-    int sa_flags;			/**< Flags controlling signal behaviour. */
+	sigset_t sa_mask;		/**< Bitmap of signals to block during handler execution. */
+	int sa_flags;			/**< Flags controlling signal behaviour. */
 } sigaction_t;
 
 /** Type of a signal handler. */
@@ -199,7 +199,7 @@ extern void psiginfo(const siginfo_t *info, const char *s);
 /* int pthread_sigmask(int, const sigset_t *, sigset_t *); */
 extern int raise(int num);
 extern int sigaction(int num, const struct sigaction *__restrict act,
-        struct sigaction *__restrict oldact);
+	struct sigaction *__restrict oldact);
 extern int sigaltstack(const stack_t *__restrict ss, stack_t *__restrict oldss);
 extern int sigaddset(sigset_t *set, int num);
 extern int sigdelset(sigset_t *set, int num);
@@ -213,7 +213,7 @@ extern sighandler_t signal(int num, sighandler_t handler);
 /* int sigpause(int); */
 /* int sigpending(sigset_t *); */
 extern int sigprocmask(int how, const sigset_t *__restrict set,
-        sigset_t *__restrict oset);
+	sigset_t *__restrict oset);
 extern int sigsuspend(const sigset_t *mask);
 /* int sigwait(const sigset_t *, int *); */
 

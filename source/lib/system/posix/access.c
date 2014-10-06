@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Alex Smith
+ * Copyright (C) 2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -34,7 +34,7 @@
  * @return		0 if access is allowed, -1 if not with errno set
  *			accordingly. */
 int access(const char *path, int mode) {
-	uint32_t rights = 0;
+	uint32_t access = 0;
 	file_info_t info;
 	handle_t handle;
 	status_t ret;
@@ -47,14 +47,14 @@ int access(const char *path, int mode) {
 
 	if(mode != F_OK) {
 		if(mode & R_OK)
-			rights |= FILE_ACCESS_READ;
+			access |= FILE_ACCESS_READ;
 		if(mode & W_OK)
-			rights |= FILE_ACCESS_WRITE;
+			access |= FILE_ACCESS_WRITE;
 		if(mode & X_OK)
-			rights |= FILE_ACCESS_EXECUTE;
+			access |= FILE_ACCESS_EXECUTE;
 	}
 
-	ret = kern_fs_open(path, rights, 0, 0, &handle);
+	ret = kern_fs_open(path, access, 0, 0, &handle);
 	if(ret != STATUS_SUCCESS) {
 		libsystem_status_to_errno(ret);
 		return -1;

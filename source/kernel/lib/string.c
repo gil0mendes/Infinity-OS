@@ -91,7 +91,7 @@ void *memcpy(void *restrict dest, const void *restrict src, size_t count) {
  * @return		Destination location. */
 void *memset(void *dest, int val, size_t count) {
 	unsigned char c = val & 0xff;
-	unsigned long *nd, nval = 0;
+	unsigned long *nd, nval;
 	char *d = (char *)dest;
 
 	/* Align the destination. */

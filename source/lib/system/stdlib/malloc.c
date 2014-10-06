@@ -15,9 +15,9 @@
  */
 
 /**
-* @file
-* @brief		Integer division function.
-*/
+ * @file
+ * @brief		Memory allocation functions.
+ */
 
 #include <kernel/mutex.h>
 #include <kernel/object.h>
@@ -58,21 +58,22 @@
 
 /** Wrapper for allocations. */
 static inline void *mmap_wrapper(size_t size) {
-    status_t ret;
-    void *addr;
+	status_t ret;
+	void *addr;
 
-    ret = kern_vm_map(&addr, size, VM_ADDRESS_ANY, VM_ACCESS_READ | VM_ACCESS_WRITE,
-            VM_MAP_PRIVATE, INVALID_HANDLE, 0, "dlmalloc");
-    if(ret != STATUS_SUCCESS) {
-        return (void *)-1;
-    }
+	ret = kern_vm_map(&addr, size, VM_ADDRESS_ANY,
+		VM_ACCESS_READ | VM_ACCESS_WRITE, VM_MAP_PRIVATE, INVALID_HANDLE,
+		0, "dlmalloc");
+	if(ret != STATUS_SUCCESS) {
+		return (void *)-1;
+	}
 
-    return addr;
+	return addr;
 }
 
 /** Wrapper for freeing. */
 static inline int munmap_wrapper(void *start, size_t length) {
-    return kern_vm_unmap(start, length);
+	return kern_vm_unmap(start, length);
 }
 
 #define MMAP(s)			mmap_wrapper((s))

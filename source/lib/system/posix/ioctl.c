@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Alex Smith
+ * Copyright (C) 2010 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -32,7 +32,7 @@
 #include "libsystem.h"
 
 /** Control a device.
- * @note		The Pulsar implementation of this function only works for
+ * @note		The Kiwi implementation of this function only works for
  *			terminal devices, and will return an error if used on
  *			anything else.
  * @param fd		File descriptor to device.

@@ -19,45 +19,27 @@
  * @brief		Signal handling functions.
  */
 
-#include <kernel/signal.h>
-#include <kernel/status.h>
-
 #include <errno.h>
 #include <signal.h>
 
 #include "libsystem.h"
 
 /** Examine or change the action of a signal.
- * @param num		Signal number to modify.
- * @param act		Pointer to new action for signal (can be NULL).
- * @param oldact	Pointer to location to store previous action in (can
- *			be NULL).
- * @return		0 on success, -1 on failure. */
+* @param num		Signal number to modify.
+* @param act		Pointer to new action for signal (can be NULL).
+* @param oldact	Pointer to location to store previous action in (can
+*			be NULL).
+* @return		0 on success, -1 on failure. */
 int sigaction(int num, const struct sigaction *restrict act, struct sigaction *restrict oldact) {
-	status_t ret;
-
-	ret = kern_signal_action(num, act, oldact);
-	if(ret != STATUS_SUCCESS) {
-		libsystem_status_to_errno(ret);
-		return -1;
-	}
-
-	return 0;
+    libsystem_stub("sigaction", false);
+    return -1;
 }
 
 /** Set the handler of a signal.
- * @param num		Signal number.
- * @param handler	Handler function.
- * @return		Previous handler, or SIG_ERR on failure. */
+* @param num		Signal number.
+* @param handler	Handler function.
+* @return		Previous handler, or SIG_ERR on failure. */
 sighandler_t signal(int num, sighandler_t handler) {
-	struct sigaction act;
-
-	act.sa_handler = handler;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-
-	if(sigaction(num, &act, &act) != 0)
-		return SIG_ERR;
-
-	return act.sa_handler;
+    libsystem_stub("signal", false);
+    return SIG_ERR;
 }

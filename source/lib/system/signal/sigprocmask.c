@@ -15,12 +15,9 @@
  */
 
 /**
- * @file
- * @brief		Signal mask function.
- */
-
-#include <kernel/signal.h>
-#include <kernel/status.h>
+* @file
+* @brief		Signal mask function.
+*/
 
 #include <errno.h>
 #include <signal.h>
@@ -28,23 +25,11 @@
 #include "libsystem.h"
 
 /** Set the signal mask.
- * @param how		How to set the mask.
- * @param set		Signal set to mask (can be NULL).
- * @param oset		Where to store previous masked signal set (can be NULL).
- * @return		0 on success, -1 on failure. */
+* @param how		How to set the mask.
+* @param set		Signal set to mask (can be NULL).
+* @param oset		Where to store previous masked signal set (can be NULL).
+* @return		0 on success, -1 on failure. */
 int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset) {
-	status_t ret;
-
-	if(how & ~SIGNAL_MASK_ACTION) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	ret = kern_signal_mask(how, set, oset);
-	if(ret != STATUS_SUCCESS) {
-		libsystem_status_to_errno(ret);
-		return -1;
-	}
-
-	return 0;
+    libsystem_stub("sigprocmask", false);
+    return -1;
 }

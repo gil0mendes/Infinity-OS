@@ -71,11 +71,11 @@ void *mmap(void *start, size_t size, int prot, int flags, int fd, off_t offset) 
 	kspec = (flags & MAP_FIXED) ? VM_ADDRESS_EXACT : VM_ADDRESS_ANY;
 
 	if(prot & PROT_READ)
-		kprotection |= VM_PROT_READ;
+		kprotection |= VM_ACCESS_READ;
 	if(prot & PROT_WRITE)
-		kprotection |= VM_PROT_WRITE;
+		kprotection |= VM_ACCESS_WRITE;
 	if(prot & PROT_EXEC)
-		kprotection |= VM_PROT_EXECUTE;
+		kprotection |= VM_ACCESS_EXECUTE;
 
 	if((flags & (MAP_PRIVATE | MAP_SHARED)) == MAP_PRIVATE) {
 		kflags |= VM_MAP_PRIVATE;

@@ -167,11 +167,11 @@ static status_t do_load_phdr(elf_image_t *image, size_t i, object_handle_t *hand
 
 	/* Work out the protection flags to use. */
 	if(phdr->p_flags & ELF_PF_R)
-		protection |= VM_PROT_READ;
+		protection |= VM_ACCESS_READ;
 	if(phdr->p_flags & ELF_PF_W)
-		protection |= VM_PROT_WRITE;
+		protection |= VM_ACCESS_WRITE;
 	if(phdr->p_flags & ELF_PF_X)
-		protection |= VM_PROT_EXECUTE;
+		protection |= VM_ACCESS_EXECUTE;
 	if(!protection) {
 		dprintf("elf: %s: program header %zu has no protection flags set\n",
 			image->name, i);
@@ -189,7 +189,7 @@ static status_t do_load_phdr(elf_image_t *image, size_t i, object_handle_t *hand
 
 		/* We have to have it writeable for us to be able to clear it
 		 * later on. */
-		if(!(protection & VM_PROT_WRITE)) {
+		if(!(protection & VM_ACCESS_WRITE)) {
 			dprintf("elf: %s: program header %zu should be writeable\n",
 				image->name, i);
 			return STATUS_MALFORMED_IMAGE;
@@ -219,7 +219,7 @@ static status_t do_load_phdr(elf_image_t *image, size_t i, object_handle_t *hand
 	 * not need to check whether the supplied addresses are valid - vm_map()
 	 * will reject them if they aren't. */
 	return vm_map(as, &start, size, VM_ADDRESS_EXACT, protection,
-		(protection & VM_PROT_WRITE) ? VM_MAP_PRIVATE : 0,
+		(protection & VM_ACCESS_WRITE) ? VM_MAP_PRIVATE : 0,
 		handle, offset, NULL);
 }
 
@@ -295,7 +295,7 @@ status_t elf_binary_load(object_handle_t *handle, const char *path, vm_aspace_t 
 		/* If a location is specified, force the binary to be there. */
 		image->load_base = dest;
 		ret = vm_map(as, &image->load_base, image->load_size,
-			(dest) ? VM_ADDRESS_EXACT : VM_ADDRESS_ANY, VM_PROT_READ,
+			(dest) ? VM_ADDRESS_EXACT : VM_ADDRESS_ANY, VM_ACCESS_READ,
 			VM_MAP_PRIVATE, NULL, 0, NULL);
 		if(ret != STATUS_SUCCESS)
 			goto fail;

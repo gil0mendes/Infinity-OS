@@ -92,7 +92,7 @@ ptr_t module_mem_alloc(size_t size) {
 		for(i = 0; i < size; i += PAGE_SIZE) {
 			page = page_alloc(MM_BOOT);
 			mmu_context_map(&kernel_mmu_context, addr + i, page->addr,
-				VM_PROT_READ | VM_PROT_WRITE | VM_PROT_EXECUTE,
+				VM_ACCESS_READ | VM_ACCESS_WRITE | VM_ACCESS_EXECUTE,
 				MM_BOOT);
 		}
 		mmu_context_unlock(&kernel_mmu_context);

@@ -48,7 +48,7 @@
  *    but the page has not been copied, because no write fault has occurred).
  *    If, when a write fault occurs on a page, the page structure reference
  *    count is greater than 1, the page is copied. Otherwise, the page is just
- *    remapped as read-write (if the region is VM_PROT_WRITE, that is).
+ *    remapped as read-write (if the region is VM_ACCESS_WRITE, that is).
  *  - Each object also contains an array of reference counts for each page that
  *    the object can cover. This array is used to track how many regions are
  *    mapping each page of the object, allowing pages to be freed when no more
@@ -436,7 +436,7 @@ static status_t map_anon_page(vm_region_t *region, ptr_t addr, uint32_t access, 
         refcount_inc(&amap->pages[idx]->count);
         amap->curr_size++;
         phys = amap->pages[idx]->addr;
-    } else if(access & VM_PROT_WRITE) {
+    } else if(access & VM_ACCESS_WRITE) {
         if(amap->pages[idx]) {
             assert(refcount_get(&amap->pages[idx]->count) > 0);
 
@@ -520,7 +520,7 @@ static status_t map_anon_page(vm_region_t *region, ptr_t addr, uint32_t access, 
              * page. */
             if(refcount_get(&amap->pages[idx]->count) > 1) {
                 assert(region->flags & VM_MAP_PRIVATE);
-                protect &= ~VM_PROT_WRITE;
+                protect &= ~VM_ACCESS_WRITE;
             }
 
             phys = amap->pages[idx]->addr;
@@ -546,7 +546,7 @@ static status_t map_anon_page(vm_region_t *region, ptr_t addr, uint32_t access, 
                     region->handle);
 
             phys = page->addr;
-            protect &= ~VM_PROT_WRITE;
+            protect &= ~VM_ACCESS_WRITE;
         }
     }
 
@@ -723,7 +723,7 @@ static vm_region_t *vm_region_clone(vm_region_t *src, vm_aspace_t *as) {
          * source region and then clone the anonymous map. */
         mmu_context_lock(src->as->mmu);
         mmu_context_protect(src->as->mmu, src->start, src->size,
-                src->protection & ~VM_PROT_WRITE);
+                src->protection & ~VM_ACCESS_WRITE);
         mmu_context_unlock(src->as->mmu);
 
         assert(src->amap);
@@ -1048,7 +1048,7 @@ status_t vm_fault(intr_frame_t *frame, ptr_t addr, int reason, uint32_t access) 
          * access type protection faults should be is write. COW faults
          * should never occur on non-private regions, either. */
         if(reason == VM_FAULT_PROTECTION) {
-            if(access != VM_PROT_WRITE) {
+            if(access != VM_ACCESS_WRITE) {
                 fatal("Non-write protection fault at %p on %p (%d)",
                         addr, region->amap, access);
             } else if(!(region->flags & VM_MAP_PRIVATE)) {
@@ -1422,7 +1422,7 @@ static void free_region(vm_aspace_t *as, ptr_t start, size_t size, int state) {
 *			the mapping at/
 * @param size		Size of mapping (multiple of page size).
 * @param spec		Address specification (VM_ADDRESS_*).
-* @param protection	Memory protection flags (VM_PROT_*).
+* @param protection	Memory protection flags (VM_ACCESS_*).
 * @param flags		Mapping behaviour flags (VM_MAP_*).
 * @param handle	Handle to object to map in. If NULL, then the region
 *			will be an anonymous memory mapping.
@@ -1864,9 +1864,9 @@ static kdb_status_t kdb_cmd_region(int argc, char **argv, kdb_filter_t *filter) 
     kdb_printf("start:       %p\n", region->start);
     kdb_printf("size:        0x%zx\n", region->size);
     kdb_printf("protection:  %c%c%c (0x%" PRIx32 ")\n",
-            (region->protection & VM_PROT_READ) ? 'R' : '-',
-            (region->protection & VM_PROT_WRITE) ? 'W' : '-',
-            (region->protection & VM_PROT_EXECUTE) ? 'X' : '-',
+            (region->protection & VM_ACCESS_READ) ? 'R' : '-',
+            (region->protection & VM_ACCESS_WRITE) ? 'W' : '-',
+            (region->protection & VM_ACCESS_EXECUTE) ? 'X' : '-',
             region->protection);
     kdb_printf("flags:       0x%" PRIx32 "\n", region->flags);
     switch(region->state) {
@@ -1906,9 +1906,9 @@ static kdb_status_t kdb_cmd_region(int argc, char **argv, kdb_filter_t *filter) 
 static void dump_region(vm_region_t *region) {
     kdb_printf("%-18p 0x%-12zx %c%c%c     0x%-3" PRIx32 " ",
             region->start, region->size,
-            (region->protection & VM_PROT_READ) ? 'R' : '-',
-            (region->protection & VM_PROT_WRITE) ? 'W' : '-',
-            (region->protection & VM_PROT_EXECUTE) ? 'X' : '-',
+            (region->protection & VM_ACCESS_READ) ? 'R' : '-',
+            (region->protection & VM_ACCESS_WRITE) ? 'W' : '-',
+            (region->protection & VM_ACCESS_EXECUTE) ? 'X' : '-',
             region->flags);
 
     switch(region->state) {
@@ -2098,7 +2098,7 @@ __init_text void vm_init(void) {
 *			the mapping at/
 * @param size		Size of mapping (multiple of page size).
 * @param spec		Address specification (VM_ADDRESS_*).
-* @param protection	Memory protection flags (VM_PROT_*).
+* @param protection	Memory protection flags (VM_ACCESS_*).
 * @param flags		Mapping behaviour flags (VM_MAP_*).
 * @param handle	Handle to object to map in. If INVALID_HANDLE, then
 *			the region will be an anonymous memory mapping.

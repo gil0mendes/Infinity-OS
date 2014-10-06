@@ -259,7 +259,7 @@ __init_text void mmu_init(void) {
 
 		for(i = 0; i < range->size; i += PAGE_SIZE) {
 			mmu_context_map(&kernel_mmu_context, range->start + i,
-				range->phys + i, VM_PROT_READ | VM_PROT_WRITE,
+				range->phys + i, VM_ACCESS_READ | VM_ACCESS_WRITE,
 				MM_BOOT);
 		}
 	}

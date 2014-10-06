@@ -155,11 +155,11 @@ static status_t do_load_phdr(rtld_image_t *image, elf_phdr_t *phdr, handle_t han
 
 	/* Work out the protection flags to use. */
 	if(phdr->p_flags & ELF_PF_R)
-		protection |= VM_PROT_READ;
+		protection |= VM_ACCESS_READ;
 	if(phdr->p_flags & ELF_PF_W)
-		protection |= VM_PROT_WRITE;
+		protection |= VM_ACCESS_WRITE;
 	if(phdr->p_flags & ELF_PF_X)
-		protection |= VM_PROT_EXECUTE;
+		protection |= VM_ACCESS_EXECUTE;
 	if(!protection) {
 		dprintf("rtld: %s: program header %zu has no protection flags\n", path, i);
 		return STATUS_MALFORMED_IMAGE;
@@ -174,7 +174,7 @@ static status_t do_load_phdr(rtld_image_t *image, elf_phdr_t *phdr, handle_t han
 		size = end - start;
 
 		/* Must be writable to be able to clear later. */
-		if(!(protection & VM_PROT_WRITE)) {
+		if(!(protection & VM_ACCESS_WRITE)) {
 			dprintf("rtld: %s: program header %zu should be writable\n",
 				path, i);
 			return STATUS_MALFORMED_IMAGE;
@@ -202,7 +202,7 @@ static status_t do_load_phdr(rtld_image_t *image, elf_phdr_t *phdr, handle_t han
 
 	/* Map the data in. Set the private flag if mapping as writeable. */
 	ret = kern_vm_map((void **)&start, size, VM_ADDRESS_EXACT, protection,
-		(protection & VM_PROT_WRITE) ? VM_MAP_PRIVATE : 0, handle,
+		(protection & VM_ACCESS_WRITE) ? VM_MAP_PRIVATE : 0, handle,
 		offset, NULL);
 	if(ret != STATUS_SUCCESS) {
 		dprintf("rtld: %s: unable to map file data into memory (%d)\n", path, ret);
@@ -327,7 +327,7 @@ status_t rtld_image_load(const char *path, rtld_image_t *req, int type, void **e
 
 		/* Allocate a chunk of memory for it. */
 		ret = kern_vm_map(&image->load_base, image->load_size, VM_ADDRESS_ANY,
-			VM_PROT_READ, VM_MAP_PRIVATE, INVALID_HANDLE, 0, NULL);
+			VM_ACCESS_READ, VM_MAP_PRIVATE, INVALID_HANDLE, 0, NULL);
 		if(ret != STATUS_SUCCESS) {
 			dprintf("rtld: %s: unable to allocate memory (%d)\n", path, ret);
 			goto fail;

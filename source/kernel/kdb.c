@@ -93,7 +93,7 @@ NOTIFIER_DEFINE(kdb_exit_notifier, NULL);
 atomic_t kdb_running = 0;
 
 /** Interrupt frame that KDB was entered with. */
-intr_frame_t *curr_kdb_frame = NULL;
+frame_t *curr_kdb_frame = NULL;
 
 /** Currently remaining steps. */
 static size_t kdb_steps_remaining = 0;
@@ -123,7 +123,7 @@ static size_t current_output_pos = 0;
 /** Current output filter. */
 static kdb_filter_t *current_filter = NULL;
 
-/** Whether to output to the LAOS log. */
+/** Whether to output to the KBoot log. */
 static bool use_laos_log = false;
 
 /**
@@ -719,7 +719,7 @@ static void kdb_line_destroy(kdb_line_t *data) {
 /** Parse the command line.
  * @param line		Line to parse.
  * @param data		Data structure to fill in.
- * @return		Whether the command line was parsed successfully. */ 
+ * @return		Whether the command line was parsed successfully. */
 static bool kdb_line_parse(char *line, kdb_line_t *data) {
 	kdb_args_t *call = NULL;
 	char *subcmd, *arg;
@@ -777,7 +777,7 @@ static bool kdb_line_parse(char *line, kdb_line_t *data) {
 /** Handle an exception during KDB command execution.
  * @param name		Name of the exception.
  * @param frame		Exception frame. */
-void kdb_except_handler(const char *name, intr_frame_t *frame) {
+void kdb_exception(const char *name, frame_t *frame) {
 	current_filter = NULL;
 	kdb_printf("KDB: %s exception occurred during command (%p)\n", name, frame->ip);
 	longjmp(kdb_fault_context, 1);
@@ -828,7 +828,7 @@ static kdb_status_t perform_call(kdb_args_t *call, kdb_filter_t *filter, kdb_fil
  *
  * @return		Status code indicating what action to perform.
  */
-kdb_status_t kdb_main(kdb_reason_t reason, intr_frame_t *frame, unsigned index) {
+kdb_status_t kdb_main(kdb_reason_t reason, frame_t *frame, unsigned index) {
 	static unsigned cmd_count = 0;
 
 	kdb_filter_t *filter;
@@ -883,7 +883,7 @@ kdb_status_t kdb_main(kdb_reason_t reason, intr_frame_t *frame, unsigned index) 
 		kdb_printf("\nEntered KDB from ");
 		kdb_print_symbol(frame->ip, 0);
 	} else if(reason == KDB_REASON_FATAL) {
-		/* When coming from a fatal error, enable writing to the LAOS
+		/* When coming from a fatal error, enable writing to the KBoot
 		 * log temporarily as we want to dump some information there. */
 		use_laos_log = true;
 	}
@@ -907,7 +907,7 @@ kdb_status_t kdb_main(kdb_reason_t reason, intr_frame_t *frame, unsigned index) 
 		}
 		atomic_set(&kdb_running, 1);
 
-		/* Flush and disable writing the LAOS log. */
+		/* Flush and disable writing the KBoot log. */
 		laos_log_flush();
 		use_laos_log = false;
 	}

@@ -92,7 +92,7 @@
 #ifdef DEBUG_THREAD
 # define dprintf(fmt...)	kprintf(LOG_DEBUG, fmt)
 #else
-# define dprintf(fmt...)	
+# define dprintf(fmt...)
 #endif
 
 /** Thread creation arguments structure, for thread_uspace_trampoline(). */
@@ -1111,7 +1111,7 @@ static status_t thread_handle_lookup(handle_t handle, thread_t **threadp) {
  * @param arg2		Unused. */
 static void thread_uspace_trampoline(void *_args, void *arg2) {
 	thread_uspace_args_t *args = _args;
-	intr_frame_t frame;
+	frame_t frame;
 
 	arch_thread_user_setup(&frame, args->entry, args->sp, args->arg);
 	kfree(args);

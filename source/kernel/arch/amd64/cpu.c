@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2013 Gil Mendes
+ * Copyright (C) 2008-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,7 +25,7 @@
 
 #include <x86/cpu.h>
 #include <x86/descriptor.h>
-#include <x86/intr.h>
+#include <x86/interrupt.h>
 #include <x86/lapic.h>
 #include <x86/tsc.h>
 
@@ -51,7 +51,7 @@ x86_features_t cpu_features;
 
 /**
  * Get the current CPU ID.
- * 
+ *
  * Gets the ID of the CPU that the function executes on. This function should
  * only be used in cases where the curr_cpu variable is unavailable or unsafe.
  * Anywhere else you should be using curr_cpu->id.
@@ -82,7 +82,7 @@ void cpu_dump(cpu_t *cpu) {
 __init_text void arch_cpu_early_init(void) {
 	/* Initialize the global IDT and the interrupt handler table. */
 	idt_init();
-	intr_init();
+	interrupt_init();
 }
 
 /** Comparison function for qsort() on an array of uint64_t's.

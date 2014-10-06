@@ -23,7 +23,7 @@ sources = FeatureSources(config, [
     'descriptor.c',
     'elf.c',
     'entry.S',
-    'intr.c',
+    'interrupt.c',
     'kdb.c',
     'lapic.c',
     'mmu.c',

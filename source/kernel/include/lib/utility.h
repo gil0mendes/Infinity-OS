@@ -30,7 +30,7 @@
  * @param val		Value to round.
  * @param nearest	Boundary to round up to.
  * @return		Rounded value. */
-#define ROUND_UP(val, nearest)		\
+#define round_up(val, nearest)		\
 	__extension__ \
 	({ \
 		typeof(val) __n = val; \
@@ -45,7 +45,7 @@
  * @param val		Value to round.
  * @param nearest	Boundary to round up to.
  * @return		Rounded value. */
-#define ROUND_DOWN(val, nearest)	\
+#define round_down(val, nearest)	\
 	__extension__ \
 	({ \
 		typeof(val) __n = val; \
@@ -58,7 +58,7 @@
 /** Check if a value is a power of 2.
  * @param val		Value to check.
  * @return		Whether value is a power of 2. */
-#define IS_POW2(val)		((val) && ((val) & ((val) - 1)) == 0)
+#define is_pow2(val)		((val) && ((val) & ((val) - 1)) == 0)
 
 /** Get the number of bits in a type. */
 #define BITS(t)			(sizeof(t) * 8)
@@ -67,13 +67,13 @@
 #define ARRAY_SIZE(a)		(sizeof((a)) / sizeof((a)[0]))
 
 /** Get the lowest value out of a pair of values. */
-#define MIN(a, b)		((a) < (b) ? (a) : (b))
+#define min(a, b)		((a) < (b) ? (a) : (b))
 
 /** Get the highest value out of a pair of values. */
-#define MAX(a, b)		((a) < (b) ? (b) : (a))
+#define max(a, b)		((a) < (b) ? (b) : (a))
 
 /** Swap two values. */
-#define SWAP(a, b)	\
+#define swap(a, b)	\
 	{ \
 		typeof(a) __tmp = a; \
 		a = b; \

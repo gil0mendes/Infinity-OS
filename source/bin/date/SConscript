@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 Gil Mendes
+# Copyright (C) 2014 Gil Mendes
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -14,12 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-dirs = [
-  'shell',
-  'test',
-  'cat',
-  'date',
-	'shutdown',
-]
+Import('manager')
 
-SConscript(dirs = dirs)
+env = manager.Create(libraries = ['kernel'])
+env.InfiApplication('date', ['main.c'])

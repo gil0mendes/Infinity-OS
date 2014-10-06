@@ -684,7 +684,7 @@ static status_t fs_lookup_internal(char *path, fs_dentry_t *entry,
 
 		/* We're trying to descend into the directory, check for
 		 * execute permission. */
-		if(!file_access(&node->file, FILE_RIGHT_EXECUTE)) {
+		if(!file_access(&node->file, FILE_ACCESS_EXECUTE)) {
 			ret = STATUS_ACCESS_DENIED;
 			goto err_release;
 		}
@@ -892,7 +892,7 @@ static status_t fs_create_prepare(const char *path, fs_dentry_t **entryp) {
 	if(fs_node_is_read_only(parent->node)) {
 		ret = STATUS_READ_ONLY;
 		goto out_release_parent;
-	} else if(!file_access(&parent->node->file, FILE_RIGHT_WRITE)) {
+	} else if(!file_access(&parent->node->file, FILE_ACCESS_WRITE)) {
 		ret = STATUS_ACCESS_DENIED;
 		goto out_release_parent;
 	}
@@ -1218,7 +1218,7 @@ status_t fs_open(const char *path, uint32_t rights, uint32_t flags,
 		if(rights && !file_access(&node->file, rights)) {
 			fs_dentry_release(entry);
 			return STATUS_ACCESS_DENIED;
-		} else if(rights & FILE_RIGHT_WRITE && fs_node_is_read_only(node)) {
+		} else if(rights & FILE_ACCESS_WRITE && fs_node_is_read_only(node)) {
 			fs_dentry_release(entry);
 			return STATUS_READ_ONLY;
 		}
@@ -1261,7 +1261,7 @@ status_t fs_create_dir(const char *path) {
  * Create a FIFO.
  *
  * Creates a new FIFO in the filesystem. A FIFO is a named pipe. Opening it
- * with FILE_RIGHT_READ will give access to the read end, and FILE_RIGHT_WRITE
+ * with FILE_ACCESS_READ will give access to the read end, and FILE_ACCESS_WRITE
  * gives access to the write end.
  *
  * @param path		Path to FIFO to create.
@@ -1871,7 +1871,7 @@ status_t fs_unlink(const char *path) {
 	} else if(fs_node_is_read_only(parent->node)) {
 		ret = STATUS_READ_ONLY;
 		goto out_release_entry;
-	} else if(!file_access(&parent->node->file, FILE_RIGHT_WRITE)) {
+	} else if(!file_access(&parent->node->file, FILE_ACCESS_WRITE)) {
 		ret = STATUS_ACCESS_DENIED;
 		goto out_release_entry;
 	} else if(!parent->node->ops->unlink) {
@@ -2361,7 +2361,7 @@ status_t kern_fs_create_dir(const char *path) {
  * Create a FIFO.
  *
  * Creates a new FIFO in the filesystem. A FIFO is a named pipe. Opening it
- * with FILE_RIGHT_READ will give access to the read end, and FILE_RIGHT_WRITE
+ * with FILE_ACCESS_READ will give access to the read end, and FILE_ACCESS_WRITE
  * gives access to the write end.
  *
  * @param path		Path to FIFO to create.
@@ -2633,7 +2633,7 @@ status_t kern_fs_set_curr_dir(const char *path) {
 	}
 
 	/* Must have execute permission to use as working directory. */
-	if(!file_access(&entry->node->file, FILE_RIGHT_EXECUTE)) {
+	if(!file_access(&entry->node->file, FILE_ACCESS_EXECUTE)) {
 		ret = STATUS_ACCESS_DENIED;
 		goto out_release;
 	}
@@ -2686,7 +2686,7 @@ status_t kern_fs_set_root_dir(const char *path) {
 	}
 
 	/* Must have execute permission to use as working directory. */
-	if(!file_access(&entry->node->file, FILE_RIGHT_EXECUTE)) {
+	if(!file_access(&entry->node->file, FILE_ACCESS_EXECUTE)) {
 		ret = STATUS_ACCESS_DENIED;
 		goto out_release;
 	}

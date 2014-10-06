@@ -96,11 +96,11 @@ static status_t file_object_map(object_handle_t *handle, vm_region_t *region) {
 	/* Check for the necessary access rights. Don't need write permission
 	 * for private mappings, changes won't be written back to the file. */
 	if(region->protection & VM_ACCESS_READ) {
-		rights |= FILE_RIGHT_READ;
+		rights |= FILE_ACCESS_READ;
 	} else if(region->protection & VM_ACCESS_WRITE && !(region->flags & VM_MAP_PRIVATE)) {
-		rights |= FILE_RIGHT_WRITE;
+		rights |= FILE_ACCESS_WRITE;
 	} else if(region->protection & VM_ACCESS_EXECUTE) {
-		rights |= FILE_RIGHT_EXECUTE;
+		rights |= FILE_ACCESS_EXECUTE;
 	}
 
 	if((fhandle->rights & rights) != rights)
@@ -192,7 +192,7 @@ static status_t file_io(object_handle_t *handle, io_request_t *request) {
 
 	fhandle = handle->private;
 
-	right = (request->op == IO_OP_WRITE) ? FILE_RIGHT_WRITE : FILE_RIGHT_READ;
+	right = (request->op == IO_OP_WRITE) ? FILE_ACCESS_WRITE : FILE_ACCESS_READ;
 	if(!(fhandle->rights & right)) {
 		ret = STATUS_ACCESS_DENIED;
 		goto out;
@@ -255,7 +255,7 @@ out:
  * will be incremented by the number of bytes read.
  *
  * @param handle	Handle to file to read from. Must have the
- *			FILE_RIGHT_READ access right.
+ *			FILE_ACCESS_READ access right.
  * @param buf		Buffer to read data into.
  * @param size		Number of bytes to read. The supplied buffer should be
  *			at least this size.
@@ -304,7 +304,7 @@ status_t file_read(object_handle_t *handle, void *buf, size_t size,
  * the offset will be incremented by the number of bytes written.
  *
  * @param handle	Handle to file to write to. Must have the
- *			FILE_RIGHT_WRITE access right.
+ *			FILE_ACCESS_WRITE access right.
  * @param buf		Buffer containing data to write.
  * @param size		Number of bytes to write. The supplied buffer should be
  *			at least this size.
@@ -352,7 +352,7 @@ status_t file_write(object_handle_t *handle, const void *buf, size_t size,
  * the offset will be incremented by the number of bytes read.
  *
  * @param handle	Handle to file to read from. Must have the
- *			FILE_RIGHT_READ access right.
+ *			FILE_ACCESS_READ access right.
  * @param vecs		I/O vectors describing buffers to read into.
  * @param count		Number of I/O vectors.
  * @param offset	Offset to read from. If negative, handle's offset will
@@ -395,7 +395,7 @@ status_t file_read_vecs(object_handle_t *handle, const io_vec_t *vecs,
  * returning the offset will be incremented by the number of bytes written.
  *
  * @param handle	Handle to file to write to. Must have the
- *			FILE_RIGHT_WRITE access right.
+ *			FILE_ACCESS_WRITE access right.
  * @param vecs		I/O vectors describing buffers containing data to write.
  * @param count		Number of I/O vectors.
  * @param offset	Offset to write to. If negative, handle's offset will
@@ -437,7 +437,7 @@ status_t file_write_vecs(object_handle_t *handle, const io_vec_t *vecs,
  * will be incremented by 1.
  *
  * @param handle	Handle to directory to read from. Must have the
- *			FILE_RIGHT_READ access right.
+ *			FILE_ACCESS_READ access right.
  * @param buf		Buffer to read entry in to.
  * @param size		Size of buffer (if not large enough, the function will
  *			return STATUS_TOO_SMALL).
@@ -460,7 +460,7 @@ status_t file_read_dir(object_handle_t *handle, dir_entry_t *buf, size_t size) {
 
 	fhandle = handle->private;
 
-	if(!(fhandle->rights & FILE_RIGHT_READ)) {
+	if(!(fhandle->rights & FILE_ACCESS_READ)) {
 		return STATUS_ACCESS_DENIED;
 	} else if(fhandle->file->type != FILE_TYPE_DIR) {
 		return STATUS_NOT_DIR;
@@ -498,7 +498,7 @@ status_t file_rewind_dir(object_handle_t *handle) {
 
 	fhandle = handle->private;
 
-	if(!(fhandle->rights & FILE_RIGHT_READ)) {
+	if(!(fhandle->rights & FILE_ACCESS_READ)) {
 		return STATUS_ACCESS_DENIED;
 	} else if(fhandle->file->type != FILE_TYPE_DIR) {
 		return STATUS_NOT_DIR;
@@ -630,7 +630,7 @@ status_t file_seek(object_handle_t *handle, unsigned action, offset_t offset,
  * size of the file, then the extra data is discarded. If it is larger than the
  * previous size, then the extended space will be filled with zero bytes.
  *
- * @param handle	Handle to file to resize. Must have the FILE_RIGHT_WRITE
+ * @param handle	Handle to file to resize. Must have the FILE_ACCESS_WRITE
  *			access right.
  * @param size		New size of the file.
  *
@@ -646,7 +646,7 @@ status_t file_resize(object_handle_t *handle, offset_t size) {
 
 	fhandle = handle->private;
 
-	if(!(fhandle->rights & FILE_RIGHT_WRITE)) {
+	if(!(fhandle->rights & FILE_ACCESS_WRITE)) {
 		return STATUS_ACCESS_DENIED;
 	} else if(fhandle->file->type != FILE_TYPE_REGULAR) {
 		return STATUS_NOT_REGULAR;
@@ -706,7 +706,7 @@ status_t file_sync(object_handle_t *handle) {
  * will be incremented by the number of bytes read.
  *
  * @param handle	Handle to file to read from. Must have the
- *			FILE_RIGHT_READ access right.
+ *			FILE_ACCESS_READ access right.
  * @param buf		Buffer to read data into.
  * @param size		Number of bytes to read. The supplied buffer should be
  *			at least this size.
@@ -770,7 +770,7 @@ out:
  * the offset will be incremented by the number of bytes written.
  *
  * @param handle	Handle to file to write to. Must have the
- *			FILE_RIGHT_WRITE access right.
+ *			FILE_ACCESS_WRITE access right.
  * @param buf		Buffer containing data to write.
  * @param size		Number of bytes to write. The supplied buffer should be
  *			at least this size.
@@ -833,7 +833,7 @@ out:
  * the offset will be incremented by the number of bytes read.
  *
  * @param handle	Handle to file to read from. Must have the
- *			FILE_RIGHT_READ access right.
+ *			FILE_ACCESS_READ access right.
  * @param vecs		I/O vectors describing buffers to read into.
  * @param count		Number of I/O vectors.
  * @param offset	Offset to read from. If negative, handle's offset will
@@ -908,7 +908,7 @@ out:
  * returning the offset will be incremented by the number of bytes written.
  *
  * @param handle	Handle to file to write to. Must have the
- *			FILE_RIGHT_WRITE access right.
+ *			FILE_ACCESS_WRITE access right.
  * @param vecs		I/O vectors describing buffers containing data to write.
  * @param count		Number of I/O vectors.
  * @param offset	Offset to write to. If negative, handle's offset will
@@ -982,7 +982,7 @@ out:
  * will be incremented by 1.
  *
  * @param handle	Handle to directory to read from. Must have the
- *			FILE_RIGHT_READ access right.
+ *			FILE_ACCESS_READ access right.
  * @param buf		Buffer to read entry in to.
  * @param size		Size of buffer (if not large enough, the function will
  *			return STATUS_TOO_SMALL).
@@ -1138,7 +1138,7 @@ status_t kern_file_seek(handle_t handle, unsigned action, offset_t offset,
  * size of the file, then the extra data is discarded. If it is larger than the
  * previous size, then the extended space will be filled with zero bytes.
  *
- * @param handle	Handle to file to resize. Must have the FILE_RIGHT_WRITE
+ * @param handle	Handle to file to resize. Must have the FILE_ACCESS_WRITE
  *			access right.
  * @param size		New size of the file.
  *

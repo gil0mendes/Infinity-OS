@@ -47,11 +47,11 @@ int access(const char *path, int mode) {
 
 	if(mode != F_OK) {
 		if(mode & R_OK)
-			rights |= FILE_RIGHT_READ;
+			rights |= FILE_ACCESS_READ;
 		if(mode & W_OK)
-			rights |= FILE_RIGHT_WRITE;
+			rights |= FILE_ACCESS_WRITE;
 		if(mode & X_OK)
-			rights |= FILE_RIGHT_EXECUTE;
+			rights |= FILE_ACCESS_EXECUTE;
 	}
 
 	ret = kern_fs_open(path, rights, 0, 0, &handle);

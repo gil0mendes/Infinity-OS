@@ -38,13 +38,13 @@ static inline object_rights_t mode_to_rights(uint16_t mode) {
 	object_rights_t rights = 0;
 
 	if(mode & S_IROTH) {
-		rights |= FILE_RIGHT_READ;
+		rights |= FILE_ACCESS_READ;
 	}
 	if(mode & S_IWOTH) {
-		rights |= FILE_RIGHT_WRITE;
+		rights |= FILE_ACCESS_WRITE;
 	}
 	if(mode & S_IXOTH) {
-		rights |= FILE_RIGHT_EXECUTE;
+		rights |= FILE_ACCESS_EXECUTE;
 	}
 	return rights;
 }

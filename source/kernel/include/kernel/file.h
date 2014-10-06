@@ -73,9 +73,9 @@ typedef struct io_vec {
 } io_vec_t;
 
 /** Access rights for files. */
-#define FILE_RIGHT_READ		(1<<0)	/**< Open for reading. */
-#define FILE_RIGHT_WRITE	(1<<1)	/**< Open for writing. */
-#define FILE_RIGHT_EXECUTE	(1<<2)	/**< Open for execution. */
+#define FILE_ACCESS_READ		(1<<0)	/**< Open for reading. */
+#define FILE_ACCESS_WRITE	(1<<1)	/**< Open for writing. */
+#define FILE_ACCESS_EXECUTE	(1<<2)	/**< Open for execution. */
 
 /** Behaviour flags for file handles. */
 #define FILE_NONBLOCK		(1<<0)	/**< I/O operations on the handle should not block. */

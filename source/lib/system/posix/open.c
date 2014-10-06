@@ -41,9 +41,9 @@ static inline void convert_open_flags(int oflag, uint32_t *krightsp,
 	uint32_t kflags = 0;
 
 	if(oflag & O_RDONLY)
-		krights |= FILE_RIGHT_READ;
+		krights |= FILE_ACCESS_READ;
 	if(oflag & O_WRONLY)
-		krights |= FILE_RIGHT_WRITE;
+		krights |= FILE_ACCESS_WRITE;
 
 	*krightsp = krights;
 

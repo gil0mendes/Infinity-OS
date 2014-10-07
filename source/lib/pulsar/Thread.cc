@@ -134,13 +134,21 @@ bool Thread::Run()
 	handle_t handle;
 	status_t ret;
 
-	thread_entry_t entry;
-	entry.func = &Thread::_Entry; 	// Function
-	entry.arg = 0; 					// Argument
-	entry.stack = NULL; 			// Stack
-	entry.stack_size = 0; 			// Stack Size
+    // [1] - Thread name
+    // [2] - Thread entry point
+    // [3] - Argument
+    // [4] - Stack (optional)
+    // [5] - Flags
+    // [6] - Handle (optional)
+	ret = kern_thread_create(
+            m_priv->name.c_str(),
+            Thread::_Entry,
+            0,
+            nullptr,
+            0,
+            &handle
+    );
 
-	ret = kern_thread_create(m_priv->name.c_str(), &entry, 0, &handle);
 	if(unlikely(ret != STATUS_SUCCESS))
 	{
 		SetError(ret);
@@ -290,7 +298,7 @@ void Thread::HandleEvent(int event) {
  *
  * @param arg		Pointer to Thread object.
  */
-void Thread::_Entry(void *arg) {
+int Thread::_Entry(void *arg) {
 	Thread *thread = reinterpret_cast<Thread *>(arg);
 
 	/* Set the event loop pointer. */
@@ -298,4 +306,6 @@ void Thread::_Entry(void *arg) {
 
 	/* Call the main function. */
 	kern_thread_exit(thread->Main());
+
+    return 0;
 }

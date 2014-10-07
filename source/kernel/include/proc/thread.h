@@ -137,8 +137,8 @@ typedef struct thread {
 	void *arg2;			/**< Second argument to thread entry function. */
 
 	/** Other thread information. */
-	ptr_t ustack;			/**< User-mode stack base. */
-	size_t ustack_size;		/**< Size of the user-mode stack. */
+	ptr_t ustack;			/**< User stack base. */
+	size_t ustack_size;		/**< Size of the user stack. */
 	thread_id_t id;			/**< ID of the thread. */
 	avl_tree_node_t tree_link;	/**< Link to thread tree. */
 	char name[THREAD_NAME_MAX];	/**< Name of the thread. */
@@ -189,7 +189,7 @@ typedef struct thread_interrupt {
 /** Macro that expands to a pointer to the current thread. */
 #define curr_thread		(arch_curr_thread())
 
-extern void arch_thread_init(thread_t *thread, void *stack, void (*entry)(void));
+extern void arch_thread_init(thread_t *thread);
 extern void arch_thread_destroy(thread_t *thread);
 extern void arch_thread_clone(thread_t *thread, struct frame *frame);
 extern void arch_thread_switch(thread_t *thread, thread_t *prev);
@@ -210,6 +210,8 @@ extern void thread_unwire(thread_t *thread);
 extern void thread_wake(thread_t *thread);
 extern void thread_kill(thread_t *thread);
 extern void thread_interrupt(thread_t *thread, thread_interrupt_t *interrupt);
+
+extern void thread_trampoline(void);
 
 extern status_t thread_sleep(spinlock_t *lock, nstime_t timeout,
 	const char *name, unsigned flags);

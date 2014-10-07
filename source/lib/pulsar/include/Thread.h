@@ -72,7 +72,7 @@ namespace pulsar
 			void RegisterEvents();
 			void HandleEvent(int event);
 
-			PULSAR_PRIVATE static void _Entry(void *arg);
+			PULSAR_PRIVATE static int _Entry(void *arg);
 
 			ThreadPrivate *m_priv;		// Internal data pointer
 	};

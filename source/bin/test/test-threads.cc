@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Alex Smith
+ * Copyright (C) 2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -41,7 +41,9 @@ static std::mutex test_lock;
 static std::condition_variable test_cond;
 static bool exiting = false;
 
-static void thread_func(void *id) {
+static int
+thread_func(void *id)
+{
 	std::unique_lock<std::mutex> lock(test_lock);
 
 	if((unsigned long)id == 0) {
@@ -60,9 +62,13 @@ static void thread_func(void *id) {
 			printf("Thread %u woken\n", (unsigned long)id);
 		}
 	}
+
+    return 0;
 }
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv)
+{
 	status_t ret;
 
 	std::cout << "Hello, World! My arguments are:" << std::endl;
@@ -70,9 +76,10 @@ int main(int argc, char **argv) {
 	std::vector<std::string> args;
 	args.assign(argv, argv + argc);
 
-	int i = 0;
-	for(const std::string &arg : args)
-		std::cout << " args[" << i++ << "] = '" << arg << "'" << std::endl;
+	unsigned long i = 0;
+	for(const std::string &arg : args) {
+        std::cout << " args[" << i++ << "] = '" << arg << "'" << std::endl;
+    }
 
 	printf("Acquiring lock...\n");
 	test_lock.lock();
@@ -81,14 +88,7 @@ int main(int argc, char **argv) {
 
 	object_event_t events[NUM_THREADS];
 	for(i = 0; i < NUM_THREADS; i++) {
-		thread_entry_t entry;
-
-		entry.func = thread_func;
-		entry.arg = (void *)(unsigned long)i;
-		entry.stack = NULL;
-		entry.stack_size = 0;
-
-		ret = kern_thread_create("test", &entry, 0, &events[i].handle);
+        ret = kern_thread_create("test", thread_func, (void *)i, nullptr, 0, &events[i].handle);
 		if(ret != STATUS_SUCCESS) {
 			fprintf(stderr, "Failed to create thread: %d\n", ret);
 			return EXIT_FAILURE;

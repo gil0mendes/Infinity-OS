@@ -1281,7 +1281,9 @@ process_clone_trampoline(void *arg1, void *arg2)
  *
  * @return		Status code describing result of the operation.
  */
-status_t kern_process_clone(handle_t *handlep) {
+status_t
+kern_process_clone(handle_t *handlep)
+{
 	vm_aspace_t *as;
 	process_t *process;
 	object_handle_t *khandle;
@@ -1290,28 +1292,36 @@ status_t kern_process_clone(handle_t *handlep) {
 	thread_t *thread;
 	status_t ret;
 
-	if(!handlep)
-		return STATUS_INVALID_ARG;
+	if(!handlep) {
+        return STATUS_INVALID_ARG;
+    }
 
 	/* Clone the address space, reference other things we're inheriting. */
 	as = vm_aspace_clone(curr_proc->aspace);
 	token_retain(curr_proc->token);
-	if(curr_proc->root_port)
-		ipc_port_retain(curr_proc->root_port);
+	if(curr_proc->root_port) {
+        ipc_port_retain(curr_proc->root_port);
+    }
 
 	ret = process_alloc(curr_proc->name, -1, curr_proc, curr_proc->priority,
 		as, curr_proc->token, curr_proc->root_port, &process);
 	if(ret != STATUS_SUCCESS) {
-		if(curr_proc->root_port)
-			ipc_port_release(curr_proc->root_port);
+		if(curr_proc->root_port) {
+            ipc_port_release(curr_proc->root_port);
+        }
 		token_release(curr_proc->token);
 		vm_aspace_destroy(as);
 		return ret;
 	}
 
+    mutex_lock(&curr_proc->lock);
+
 	/* Clone handles and other per-process information. */
 	object_process_clone(process, curr_proc);
 	elf_process_clone(process, curr_proc);
+    memcpy(&process->exceptions, &curr_proc->exceptions, sizeof(process->exceptions));
+
+    mutex_unlock(&curr_proc->lock);
 
 	/* Create a new handle. This takes over the initial reference added by
 	 * process_alloc(). */
@@ -1339,6 +1349,7 @@ status_t kern_process_clone(handle_t *handlep) {
 	spinlock_unlock(&curr_thread->lock);
 
 	/* Inherit other per-thread attributes from the calling thread. */
+    memcpy(&process->exceptions, &curr_proc->exceptions, sizeof(process->exceptions));
 	thread->ustack = curr_thread->ustack;
 	thread->ustack_size = curr_thread->ustack_size;
 
@@ -1645,14 +1656,22 @@ status_t kern_process_set_token(handle_t handle) {
  *			STATUS_INVALID_ARG if code is invalid.
  *			STATUS_INVALID_ADDR if handler is an invalid address.
  */
-status_t kern_process_set_exception(unsigned code, exception_handler_t handler) {
+status_t
+kern_process_set_exception(unsigned code, exception_handler_t handler)
+{
 	if(code >= EXCEPTION_MAX) {
 		return STATUS_INVALID_ARG;
 	} else if(handler && !is_user_address(handler)) {
 		return STATUS_INVALID_ADDR;
 	}
 
+    /**
+    * Locking is necessary here due to the memcpy() of the exception table
+    * in kern_process_clone(). Setting should be atomic.
+    */
+    mutex_lock(&curr_proc->lock);
 	curr_proc->exceptions[code] = handler;
+    mutex_unlock(&curr_proc->lock);
 	return STATUS_SUCCESS;
 }
 

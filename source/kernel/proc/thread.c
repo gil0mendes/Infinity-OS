@@ -623,15 +623,22 @@ void thread_exit(void) {
 
 /** Handle a user mode thread exception.
  * @param info		Exception information structure (will be copied). */
-void thread_exception(exception_info_t *info) {
+void
+thread_exception(exception_info_t *info)
+{
 	exception_handler_t handler;
 	thread_interrupt_t *interrupt;
 
 	handler = curr_thread->exceptions[info->code];
-	if(!handler)
-		handler = curr_proc->exceptions[info->code];
+	if(!handler) {
+        handler = curr_proc->exceptions[info->code];
+    }
 
 	if(!handler || curr_thread->ipl > THREAD_IPL_EXCEPTION) {
+        kprintf(LOG_DEBUG, "thread: killing process %" PRId32 " "
+            "(%s) due to thread %" PRId32 " (%s) exception %u\n",
+            curr_proc->id, curr_proc->name, curr_thread->id,
+            curr_thread->name, info->code);
 		curr_proc->status = info->code;
 		curr_proc->reason = EXIT_REASON_EXCEPTION;
 		process_exit();
@@ -1579,7 +1586,9 @@ status_t kern_thread_set_token(handle_t handle) {
  *			STATUS_INVALID_ARG if code is invalid.
  *			STATUS_INVALID_ADDR if handler is an invalid address.
  */
-status_t kern_thread_set_exception(unsigned code, exception_handler_t handler) {
+status_t
+kern_thread_set_exception(unsigned code, exception_handler_t handler)
+{
 	if(code >= EXCEPTION_MAX) {
 		return STATUS_INVALID_ARG;
 	} else if(handler && !is_user_address(handler)) {
@@ -1588,6 +1597,43 @@ status_t kern_thread_set_exception(unsigned code, exception_handler_t handler) {
 
 	curr_thread->exceptions[code] = handler;
 	return STATUS_SUCCESS;
+}
+
+/**
+* Raise an exception in the calling thread.
+*
+* Raises an exception in the calling thread. If a handler is registered and
+* he current IPL does not block exception, then the handler will be executed.
+* Otherwise, the process will be terminated.
+*
+* @param info           Exception information.
+*
+* @return               STATUS_SUCCESS on success.
+*                       STATUS_INVALID_ARG if info is NULL or exception code is
+*                       invalid.
+*                       STATUS_INVALID_ADDR if info points to an invalid address.
+*/
+status_t
+kern_thread_raise(exception_info_t *info)
+{
+    exception_info_t kinfo;
+    status_t ret;
+
+    if (!info) {
+        return STATUS_INVALID_ARG;
+    }
+
+    ret = memcpy_from_user(&kinfo, info, sizeof(kinfo));
+    if (ret != STATUS_SUCCESS) {
+        return ret;
+    }
+
+    if (kinfo.code >= EXCEPTION_MAX) {
+        return STATUS_INVALID_ARG;
+    }
+
+    thread_exception(&kinfo);
+    return STATUS_SUCCESS;
 }
 
 /** Sleep for a certain amount of time.

@@ -26,6 +26,7 @@
 
 #include <lib/ctype.h>
 #include <lib/string.h>
+#include <lib/utility.h>
 
 #include <assert.h>
 #include <endian.h>
@@ -352,7 +353,14 @@ static bool iso9660_iterate(file_handle_t *handle, dir_iterate_cb_t cb, void *ar
 		offset += rec->rec_len;
 
 		if(rec->rec_len == 0) {
-			break;
+            /**
+            * A zero record length means we should move on to the
+            * next block. If this is the end, this will cause us
+            * to break out of the while loop if offset becomes >=
+            * data_len
+            */
+            offset = ROUND_UP(offset, ISO9660_BLOCK_SIZE);
+            continue;
 		} else if(rec->file_flags & (1<<0)) {
 			continue;
 		} else if(rec->file_flags & (1<<1) && rec->file_ident_len == 1) {

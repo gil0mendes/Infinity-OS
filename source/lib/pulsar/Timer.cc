@@ -94,7 +94,7 @@ void Timer::Stop()
  */
 void Timer::RegisterEvents()
 {
-	RegisterEvent(TIMER_EVENT_FIRED);
+	RegisterEvent(TIMER_EVENT);
 }
 
 /**
@@ -104,7 +104,7 @@ void Timer::RegisterEvents()
  */
 void Timer::HandleEvent(int event)
 {
-	assert(event == TIMER_EVENT_FIRED);
+	assert(event == TIMER_EVENT);
 
 	if (m_mode == OneShotMode)
 	{

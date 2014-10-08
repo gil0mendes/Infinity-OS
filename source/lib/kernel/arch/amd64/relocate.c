@@ -21,10 +21,15 @@
 
 #include "libkernel.h"
 
-/** Relocate the library.
- * @param args		Process argument block.
- * @param dyn		Pointer to dynamic section. */
-void libkernel_relocate(process_args_t *args, elf_dyn_t *dyn) {
+/**
+* Relocate the library.
+*
+* @param args		Process argument block.
+* @param dyn		Pointer to dynamic section.
+*/
+void
+libkernel_relocate(process_args_t *args, elf_dyn_t *dyn)
+{
 	elf_rela_t *reloc;
 	elf_addr_t *addr, load_base;
 	size_t size, ent, i;
@@ -53,7 +58,7 @@ void libkernel_relocate(process_args_t *args, elf_dyn_t *dyn) {
 			*addr = (elf_addr_t)load_base + reloc->r_addend;
 			break;
 		case ELF_R_X86_64_DTPMOD64:
-			*addr = LIBKERNEL_TLS_ID;
+			*addr = LIBKERNEL_IMAGE_ID;
 			break;
 		default:
 			kern_process_exit(STATUS_MALFORMED_IMAGE);

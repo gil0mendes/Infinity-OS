@@ -122,18 +122,22 @@ static void process_ctor(void *obj, void *data) {
 	notifier_init(&process->death_notifier, process);
 }
 
-/** Allocate and initialize a new process structure.
- * @param name		Name to give the process.
- * @param id		If negative, allocate an ID, else the exact ID to use.
- * @param parent	Parent to inherit information from.
- * @param priority	Priority class to give the process.
- * @param aspace	Address space for the process.
- * @param token		Security token for the process (should be referenced).
- * @param root_port	Root port for the process (should be referenced).
- * @param processp	Where to store pointer to created process structure.
- *			Reference count will be set to 1.
- * @return		STATUS_SUCCESS if successful, STATUS_PROCESS_LIMIT if
- *			unable to allocate an ID. */
+/**
+* Allocate and initialize a new process structure.
+*
+* @param name		Name to give the process.
+* @param id		    If negative, allocate an ID, else the exact ID to use.
+* @param parent	    Parent to inherit information from.
+* @param priority	Priority class to give the process.
+* @param aspace	    Address space for the process.
+* @param token		Security token for the process (should be referenced).
+* @param root_port	Root port for the process (should be referenced).
+* @param processp	Where to store pointer to created process structure.
+*			        Reference count will be set to 1.
+*
+* @return		    STATUS_SUCCESS if successful, STATUS_PROCESS_LIMIT if
+*			        unable to allocate an ID.
+*/
 static status_t
 process_alloc(const char *name, process_id_t id, process_t *parent, int priority,
 	vm_aspace_t *aspace, token_t *token, ipc_port_t *root_port,
@@ -155,7 +159,6 @@ process_alloc(const char *name, process_id_t id, process_t *parent, int priority
 	process->priority = priority;
 	process->token = token;
 	process->aspace = aspace;
-	process->next_image_id = 0;
 	process->thread_restore = 0;
 	memset(process->exceptions, 0, sizeof(process->exceptions));
 	process->root_port = root_port;
@@ -730,7 +733,6 @@ __init_text void process_init(void) {
 	process_alloc("[kernel]", 0, NULL, PRIORITY_CLASS_SYSTEM, NULL,
 		system_token, NULL, &kernel_proc);
 	kernel_proc->flags |= PROCESS_CRITICAL;
-	kernel_proc->next_image_id = 1;
 	list_append(&kernel_proc->images, &kernel_module.image.header);
 }
 
@@ -1211,7 +1213,6 @@ kern_process_exec(const char *path, const char *const args[],
 
 	/* Free all currently loaded images. */
 	elf_process_cleanup(curr_proc);
-	curr_proc->next_image_id = 0;
 
 	mutex_unlock(&curr_proc->lock);
 

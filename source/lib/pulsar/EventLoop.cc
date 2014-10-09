@@ -156,7 +156,7 @@ void EventLoop::AddEvent(Handle *handle, unsigned event)
 {
 	assert(handle->m_event_loop == this);
 
-	object_event_t _event = { handle->GetHandle(), 0, event, false };
+	object_event_t _event = { handle->GetHandle(), event, OBJECT_EVENT_EDGE, 0, NULL };
 	m_priv->events.push_back(_event);
 }
 
@@ -246,11 +246,13 @@ int EventLoop::Run(void)
 		// Signal each handle an event occurred on.
 		for(size_t i = 0; i < m_priv->events.size(); i++) 
 		{
-			if(m_priv->events[i].signalled) 
+			/*
+			@TODO: Refactor this
+			if(m_priv->events[i].signalled)
 			{
 				auto handle = m_priv->handles.find(m_priv->events[i].handle);
 				handle->second->HandleEvent(m_priv->events[i].event);
-			}
+			}*/
 		}
 
 		PostHandle();

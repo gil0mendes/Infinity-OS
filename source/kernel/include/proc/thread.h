@@ -111,13 +111,14 @@ typedef struct thread {
 
 	/** User mode interrupt information. */
 	unsigned ipl;			/**< User mode interrupt priority level. */
+    list_t callbacks;       /**< Event callbacks registered by this thread. */
 	list_t interrupts;		/**< Pending user mode interrupts. */
 
 	/** Exception handler table. */
 	exception_handler_t exceptions[EXCEPTION_MAX];
     thread_stack_t exception_stack; /**< Exception stack. */
 
-	/** Overridden security token for the thread (if any). */
+    /** Overridden security token for the thread (protected by process lock). */
 	token_t *token;
 
 	/**

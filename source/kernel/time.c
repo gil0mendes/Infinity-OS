@@ -493,7 +493,7 @@ timer_object_close(object_handle_t *handle)
 * @return		Status code describing result of the operation.
 */
 static status_t
-timer_object_wait(object_handle_t *handle, object_event_t event)
+timer_object_wait(object_handle_t *handle, object_event_t *event)
 {
 	user_timer_t *timer = handle->private;
 
@@ -502,7 +502,7 @@ timer_object_wait(object_handle_t *handle, object_event_t event)
         if(!(event->flags & OBJECT_EVENT_EDGE) && timer->fired) {
 			object_event_signal(event, 0);
 		} else {
-			notifier_register(&timer->notifier, object_wait_notifier, event);
+			notifier_register(&timer->notifier, object_event_notifier, event);
 		}
 
 		return STATUS_SUCCESS;
@@ -524,7 +524,7 @@ timer_object_unwait(object_handle_t *handle, object_event_t *event)
 
 	switch(event->event) {
 	case TIMER_EVENT:
-		notifier_unregister(&timer->notifier, object_wait_notifier, event);
+		notifier_unregister(&timer->notifier, object_event_notifier, event);
 		break;
 	}
 }

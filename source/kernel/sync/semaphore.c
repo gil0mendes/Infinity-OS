@@ -135,7 +135,7 @@ semaphore_object_wait(object_handle_t *handle, object_event_t *event)
             if(!(event->flags & OBJECT_EVENT_EDGE) && sem->sem.count) {
                 object_event_signal(event, 0);
             } else {
-                notifier_register(&sem->notifier, object_wait_notifier, event);
+                notifier_register(&sem->notifier, object_event_notifier, event);
             }
 
             return STATUS_SUCCESS;
@@ -157,7 +157,7 @@ semaphore_object_unwait(object_handle_t *handle, object_event_t *event)
 
     switch(event->event) {
         case SEMAPHORE_EVENT:
-            notifier_unregister(&sem->notifier, object_wait_notifier, event);
+            notifier_unregister(&sem->notifier, object_event_notifier, event);
             break;
     }
 }

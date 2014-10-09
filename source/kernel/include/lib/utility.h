@@ -92,7 +92,7 @@
 * @return           Pointer to parent object.
 */
 #define container_of(ptr, type, member) \
-    __extesnion__ \
+    __extension__ \
     ({ \
         const typeof(((type *)0)->member) *__mptr = ptr; \
         (type *)((char *)__mptr - offsetof(type, member)); \

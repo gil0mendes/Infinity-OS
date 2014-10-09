@@ -123,7 +123,7 @@ void Handle::InhibitEvents(bool inhibit)
  */
 status_t Handle::_Wait(unsigned event, useconds_t timeout) const 
 {
-	object_event_t _event = { m_handle, event, 0, false };
+	object_event_t _event = { m_handle, event, OBJECT_EVENT_EDGE, 0, NULL };
 	status_t ret;
 
 	ret = kern_object_wait(&_event, 1, 0, timeout);

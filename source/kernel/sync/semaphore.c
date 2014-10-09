@@ -132,7 +132,7 @@ semaphore_object_wait(object_handle_t *handle, object_event_t *event)
 
     switch(event->event) {
         case SEMAPHORE_EVENT:
-            if(sem->sem.count) {
+            if(!(event->flags & OBJECT_EVENT_EDGE) && sem->sem.count) {
                 object_event_signal(event, 0);
             } else {
                 notifier_register(&sem->notifier, object_wait_notifier, event);
@@ -291,6 +291,11 @@ status_t kern_semaphore_up(handle_t handle, size_t count) {
     sem->sem.count += count - num_threads;
 
     spinlock_unlock(&sem->sem.lock);
+
+    if (count - num_threads) {
+        notifier_run(&sem->notifier, NULL, false);
+    }
+
     object_handle_release(khandle);
     return STATUS_SUCCESS;
 }

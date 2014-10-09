@@ -262,7 +262,7 @@ connection_object_wait(object_handle_t *handle, object_event_t *event)
 
 	switch(event->event) {
 	case CONNECTION_EVENT_HANGUP:
-		if(endpoint->conn->state == IPC_CONNECTION_CLOSED) {
+        if(!(event->flags & OBJECT_EVENT_EDGE) && endpoint->conn->state == IPC_CONNECTION_CLOSED) {
 			object_event_signal(event, 0);
 		} else {
 			notifier_register(&endpoint->hangup_notifier, object_event_notifier, event);
@@ -271,7 +271,7 @@ connection_object_wait(object_handle_t *handle, object_event_t *event)
 		ret = STATUS_SUCCESS;
 		break;
 	case CONNECTION_EVENT_MESSAGE:
-		if(endpoint->message_count) {
+        if(!(event->flags & OBJECT_EVENT_EDGE) && endpoint->message_count) {
 			object_event_signal(event, 0);
 		} else {
 			notifier_register(&endpoint->message_notifier, object_event_notifier, event);

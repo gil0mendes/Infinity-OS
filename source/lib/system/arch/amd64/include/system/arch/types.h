@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Gil Mendes
+ * Copyright (C) 2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,30 +16,13 @@
 
 /**
  * @file
- * @brief		AMD64 assembly code definitions.
+ * @brief		AMD64 type definitions.
  */
 
-#ifndef __AMD64_ASM_H
-#define __AMD64_ASM_H
+#ifndef __SYSTEM_ARCH_TYPES_H
+#define __SYSTEM_ARCH_TYPES_H
 
-/** Macro to define the beginning of a global function. */
-#define FUNCTION_START(name)		\
-	.global name; \
-	.type name, @function; \
-	name:
+/** Word size of the architecture. */
+#define __WORDSIZE	64
 
-/** Macro to define the beginning of a private function. */
-#define PRIVATE_FUNCTION_START(name)	\
-	.type name, @function; \
-	name:
-
-/** Macro to define the end of a function. */
-#define FUNCTION_END(name)		\
-	.size name, . - name
-
-/** Macro to define a global symbol. */
-#define SYMBOL(name)			\
-	.global name; \
-	name:
-
-#endif /* __AMD64_ASM_H */
+#endif /* __SYSTEM_ARCH_TYPES_H */

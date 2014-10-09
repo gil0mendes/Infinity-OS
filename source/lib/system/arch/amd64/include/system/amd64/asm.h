@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2010 Gil Mendes
+ * Copyright (C) 2010-2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,26 +16,30 @@
 
 /**
  * @file
- * @brief		Directory handling functions.
+ * @brief		AMD64 assembly code definitions.
  */
 
-#ifndef __DIRENT_PRIV_H
-#define __DIRENT_PRIV_H
+#ifndef __SYSTEM_AMD64_ASM_H
+#define __SYSTEM_AMD64_ASM_H
 
-#include <kernel/fs.h>
-#include <kernel/object.h>
-#include <kernel/status.h>
+/** Macro to define the beginning of a global function. */
+#define FUNCTION_START(name)		\
+	.global name; \
+	.type name, @function; \
+	name:
 
-#include <dirent.h>
+/** Macro to define the beginning of a private function. */
+#define PRIVATE_FUNCTION_START(name)	\
+	.type name, @function; \
+	name:
 
-#include "libsystem.h"
+/** Macro to define the end of a function. */
+#define FUNCTION_END(name)		\
+	.size name, . - name
 
-/** Size of the internal directory entry buffer. */
-#define DIRSTREAM_BUF_SIZE	0x1000
+/** Macro to define a global symbol. */
+#define SYMBOL(name)			\
+	.global name; \
+	name:
 
-struct __dstream_internal {
-	handle_t handle;		/**< Handle to the directory. */
-	char buf[DIRSTREAM_BUF_SIZE];	/**< Buffer for entry structures. */
-};
-
-#endif /* __DIRENT_PRIV_H */
+#endif /* __SYSTEM_AMD64_ASM_H */

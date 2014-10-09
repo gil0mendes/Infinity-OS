@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Gil Mendes
+ * Copyright (C) 2008-2013 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,13 +16,25 @@
 
 /**
  * @file
- * @brief		AMD64 type definitions.
+ * @brief		AMD64 setjmp definitions.
  */
 
-#ifndef __ARCH_TYPES_H
-#define __ARCH_TYPES_H
+#ifndef __SYSTEM_ARCH_SETJMP_H
+#define __SYSTEM_ARCH_SETJMP_H
 
-/** Word size of the architecture. */
-#define __WORDSIZE	64
+/**
+ * Jump buffer size.
+ *
+ * On AMD64 we have the following layout:
+ *  jmp_buf[0] = Return address
+ *  jmp_buf[1] = rsp
+ *  jmp_buf[2] = rbp
+ *  jmp_buf[3] = rbx
+ *  jmp_buf[4] = r12
+ *  jmp_buf[5] = r13
+ *  jmp_buf[6] = r14
+ *  jmp_buf[7] = r15
+ */
+#define JMP_BUF_SIZE		8
 
-#endif /* __ARCH_TYPES_H */
+#endif /* __SYSTEM_ARCH_SETJMP_H */

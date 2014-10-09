@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2013 Gil Mendes
+ * Copyright (C) 2009-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -55,44 +55,54 @@ typedef struct device_ops {
 	 * @param handle	File handle structure. */
 	void (*close)(struct device *device, file_handle_t *handle);
 
-	/** Signal that a device event is being waited for.
-	 * @note		If the event being waited for has occurred
-	 *			already, this function should call the callback
-	 *			function and return success.
-	 * @param device	Device to wait on.
-	 * @param handle	File handle structure.
-	 * @param event		Event that is being waited for.
-	 * @param wait		Internal data pointer to be passed to
-	 *			object_wait_signal() or object_wait_notifier().
-	 * @return		Status code describing result of the operation. */
-	status_t (*wait)(struct device *device, file_handle_t *handle, unsigned event,
-		void *wait);
+	/**
+    * Signal that a device event is being waited for.
+    *
+	* @note		If the event being waited for has occurred
+	*			already, this function should call the callback
+	*			function and return success.
+    *
+	* @param device	    Device to wait on.
+	* @param handle	    File handle structure.
+	* @param event		Event that is being waited for.
+    *
+	* @return		    Status code describing result of the operation.
+    */
+	status_t (*wait)(struct device *device, file_handle_t *handle, object_event_t *event);
 
-	/** Stop waiting for a device event.
-	 * @param device	Device being waited on.
-	 * @param handle	File handle structure.
-	 * @param event		Event that is being waited for.
-	 * @param wait		Internal data pointer. */
-	void (*unwait)(struct device *device, file_handle_t *handle, unsigned event,
-		void *wait);
+	/**
+    * Stop waiting for a device event.
+    *
+	* @param device	    Device being waited on.
+	* @param handle	    File handle structure.
+	* @param event		Event that is being waited for.
+    */
+	void (*unwait)(struct device *device, file_handle_t *handle, object_event_t *event);
 
-	/** Perform I/O on a device.
-	 * @param device	Device to perform I/O on.
-	 * @param handle	File handle structure.
-	 * @param request	I/O request.
-	 * @return		Status code describing result of the operation. */
-	status_t (*io)(struct device *device, file_handle_t *handle,
-		struct io_request *request);
+	/**
+    * Perform I/O on a device.
+    *
+	* @param device	    Device to perform I/O on.
+	* @param handle	    File handle structure.
+	* @param request	I/O request.
+    *
+	* @return		    Status code describing result of the operation.
+    */
+	status_t (*io)(struct device *device, file_handle_t *handle, struct io_request *request);
 
-	/** Map a device into memory.
-	 * @note		See object_type_t::map() for more details on the
-	 *			behaviour of this function.
-	 * @param device	Device to map.
-	 * @param handle	File handle structure.
-	 * @param region	Region being mapped.
-	 * @return		Status code describing result of the operation. */
-	status_t (*map)(struct device *device, struct file_handle *handle,
-		struct vm_region *region);
+	/**
+    * Map a device into memory.
+    *
+	* @note		See object_type_t::map() for more details on the
+	*			behaviour of this function.
+    *
+	* @param device	    Device to map.
+	* @param handle	    File handle structure.
+	* @param region	    Region being mapped.
+    *
+	* @return		    Status code describing result of the operation.
+    */
+    status_t (*map)(struct device *device, struct file_handle *handle, struct vm_region *region);
 
 	/** Handler for device-specific requests.
 	 * @param device	Device request is being made on.

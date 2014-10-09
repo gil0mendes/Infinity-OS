@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2013 Gil Mendes
+ * Copyright (C) 2010-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -484,21 +484,26 @@ timer_object_close(object_handle_t *handle)
 	kfree(timer);
 }
 
-/** Signal that a timer is being waited for.
- * @param handle	Handle to timer.
- * @param event		Event to wait for.
- * @param wait		Internal wait data pointer.
- * @return		Status code describing result of the operation. */
-static status_t timer_object_wait(object_handle_t *handle, unsigned event, void *wait) {
+/**
+* Signal that a timer is being waited for.
+*
+* @param handle	Handle to timer.
+* @param event		Event to wait for.
+*
+* @return		Status code describing result of the operation.
+*/
+static status_t
+timer_object_wait(object_handle_t *handle, object_event_t event)
+{
 	user_timer_t *timer = handle->private;
 
-	switch(event) {
+	switch(event->event) {
 	case TIMER_EVENT:
 		if(timer->fired) {
 			timer->fired = false;
-			object_wait_signal(wait, 0);
+			object_event_signal(event, 0);
 		} else {
-			notifier_register(&timer->notifier, object_wait_notifier, wait);
+			notifier_register(&timer->notifier, object_wait_notifier, event);
 		}
 
 		return STATUS_SUCCESS;
@@ -507,16 +512,20 @@ static status_t timer_object_wait(object_handle_t *handle, unsigned event, void 
 	}
 }
 
-/** Stop waiting for a timer.
- * @param handle	Handle to timer.
- * @param event		Event to wait for.
- * @param wait		Internal wait data pointer. */
-static void timer_object_unwait(object_handle_t *handle, unsigned event, void *wait) {
+/**
+* Stop waiting for a timer.
+*
+* @param handle	Handle to timer.
+* @param event		Event to wait for.
+*/
+static void
+timer_object_unwait(object_handle_t *handle, object_event_t *event)
+{
 	user_timer_t *timer = handle->private;
 
-	switch(event) {
+	switch(event->event) {
 	case TIMER_EVENT:
-		notifier_unregister(&timer->notifier, object_wait_notifier, wait);
+		notifier_unregister(&timer->notifier, object_wait_notifier, event);
 		break;
 	}
 }

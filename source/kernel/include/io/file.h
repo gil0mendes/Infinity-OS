@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Gil Mendes
+ * Copyright (C) 2013-2014 Gil Mendes
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -45,22 +45,27 @@ typedef struct file_ops {
 	 * @return		Pointer to allocated name string. */
 	char *(*name)(struct file_handle *handle);
 
-	/** Signal that a file event is being waited for.
-	 * @note		If the event being waited for has occurred
-	 *			already, this function should call the callback
-	 *			function and return success.
-	 * @param handle	File handle structure.
-	 * @param event		Event that is being waited for.
-	 * @param wait		Internal data pointer to be passed to
-	 *			object_wait_signal() or object_wait_notifier().
-	 * @return		Status code describing result of the operation. */
-	status_t (*wait)(struct file_handle *handle, unsigned event, void *wait);
+	/**
+    * Signal that a file event is being waited for.
+    *
+	* @note		If the event being waited for has occurred
+	*			already, this function should call the callback
+	*			function and return success.
+    *
+	* @param handle	    File handle structure.
+	* @param event		Event that is being waited for.
+    *
+	* @return		    Status code describing result of the operation.
+    */
+	status_t (*wait)(struct file_handle *handle, object_event_t *event);
 
-	/** Stop waiting for a file event.
-	 * @param handle	File handle structure.
-	 * @param event		Event that is being waited for.
-	 * @param wait		Internal data pointer. */
-	void (*unwait)(struct file_handle *handle, unsigned event, void *wait);
+	/**
+    * Stop waiting for a file event.
+    *
+	* @param handle	    File handle structure.
+	* @param event		Event that is being waited for.
+    */
+	void (*unwait)(struct file_handle *handle, object_event_t *event);
 
 	/** Perform I/O on a file.
 	 * @param handle	File handle structure.

@@ -121,18 +121,23 @@ static void port_object_detach(object_handle_t *handle, process_t *process) {
 	mutex_unlock(&port->lock);
 }
 
-/** Signal that a port event is being waited for.
- * @param handle	Handle to the port.
- * @param event		Event that is being waited for.
- * @param wait		Internal data pointer.
- * @return		Status code describing result of the operation. */
-static status_t port_object_wait(object_handle_t *handle, unsigned event, void *wait) {
+/**
+* Signal that a port event is being waited for.
+*
+* @param handle	    Handle to the port.
+* @param event		Event that is being waited for.
+*
+* @return		    Status code describing result of the operation.
+*/
+static status_t
+port_object_wait(object_handle_t *handle, object_event_t *event)
+{
 	ipc_port_t *port = handle->private;
 	status_t ret;
 
 	mutex_lock(&port->lock);
 
-	switch(event) {
+	switch(event->event) {
 	case PORT_EVENT_CONNECTION:
 		if(curr_proc != port->owner) {
 			mutex_unlock(&port->lock);
@@ -140,9 +145,9 @@ static status_t port_object_wait(object_handle_t *handle, unsigned event, void *
 		}
 
 		if(!list_empty(&port->waiting)) {
-			object_wait_signal(wait, 0);
+			object_event_signal(event, 0);
 		} else {
-			notifier_register(&port->connection_notifier, object_wait_notifier, wait);
+			notifier_register(&port->connection_notifier, object_event_notifier, event);
 		}
 
 		ret = STATUS_SUCCESS;
@@ -156,16 +161,20 @@ static status_t port_object_wait(object_handle_t *handle, unsigned event, void *
 	return ret;
 }
 
-/** Stop waiting for a port event.
- * @param handle	Handle to the port.
- * @param event		Event that is being waited for.
- * @param wait		Internal data pointer. */
-static void port_object_unwait(object_handle_t *handle, unsigned event, void *wait) {
+/**
+* Stop waiting for a port event.
+*
+* @param handle	Handle to the port.
+* @param event		Event that is being waited for.
+*/
+static void
+port_object_unwait(object_handle_t *handle, object_event_t *event)
+{
 	ipc_port_t *port = handle->private;
 
-	switch(event) {
+	switch(event->event) {
 	case PORT_EVENT_CONNECTION:
-		notifier_unregister(&port->connection_notifier, object_wait_notifier, wait);
+		notifier_unregister(&port->connection_notifier, object_event_notifier, event);
 		break;
 	}
 }
@@ -235,32 +244,37 @@ static void connection_object_close(object_handle_t *handle) {
 	ipc_connection_close(handle->private);
 }
 
-/** Signal that a connection event is being waited for.
- * @param handle	Handle to the connection.
- * @param event		Event that is being waited for.
- * @param wait		Internal data pointer.
- * @return		Status code describing result of the operation. */
-static status_t connection_object_wait(object_handle_t *handle, unsigned event, void *wait) {
+/**
+* Signal that a connection event is being waited for.
+*
+* @param handle	    Handle to the connection.
+* @param event		Event that is being waited for.
+*
+* @return		    Status code describing result of the operation.
+*/
+static status_t
+connection_object_wait(object_handle_t *handle, object_event_t *event)
+{
 	ipc_endpoint_t *endpoint = handle->private;
 	status_t ret;
 
 	mutex_lock(&endpoint->conn->lock);
 
-	switch(event) {
+	switch(event->event) {
 	case CONNECTION_EVENT_HANGUP:
 		if(endpoint->conn->state == IPC_CONNECTION_CLOSED) {
-			object_wait_signal(wait, 0);
+			object_event_signal(event, 0);
 		} else {
-			notifier_register(&endpoint->hangup_notifier, object_wait_notifier, wait);
+			notifier_register(&endpoint->hangup_notifier, object_event_notifier, event);
 		}
 
 		ret = STATUS_SUCCESS;
 		break;
 	case CONNECTION_EVENT_MESSAGE:
 		if(endpoint->message_count) {
-			object_wait_signal(wait, 0);
+			object_event_signal(event, 0);
 		} else {
-			notifier_register(&endpoint->message_notifier, object_wait_notifier, wait);
+			notifier_register(&endpoint->message_notifier, object_event_notifier, event);
 		}
 
 		ret = STATUS_SUCCESS;
@@ -274,19 +288,23 @@ static status_t connection_object_wait(object_handle_t *handle, unsigned event, 
 	return ret;
 }
 
-/** Stop waiting for a connection event.
- * @param handle	Handle to the connection.
- * @param event		Event that is being waited for.
- * @param wait		Internal data pointer. */
-static void connection_object_unwait(object_handle_t *handle, unsigned event, void *wait) {
+/**
+* Stop waiting for a connection event.
+*
+* @param handle	Handle to the connection.
+* @param event		Event that is being waited for.
+*/
+static void
+connection_object_unwait(object_handle_t *handle, object_event_t *event)
+{
 	ipc_endpoint_t *endpoint = handle->private;
 
-	switch(event) {
+	switch(event->event) {
 	case CONNECTION_EVENT_HANGUP:
-		notifier_unregister(&endpoint->hangup_notifier, object_wait_notifier, wait);
+		notifier_unregister(&endpoint->hangup_notifier, object_event_notifier, event);
 		break;
 	case CONNECTION_EVENT_MESSAGE:
-		notifier_unregister(&endpoint->message_notifier, object_wait_notifier, wait);
+		notifier_unregister(&endpoint->message_notifier, object_event_notifier, event);
 		break;
 	}
 }

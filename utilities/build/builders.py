@@ -27,7 +27,7 @@ ld_script_builder = Builder(action = Action(
     '$GENCOMSTR'))
 
 # Custom method to build a Pulsar application.
-def infi_application_method(env, name, sources, **kwargs):
+def pulsar_application_method(env, name, sources, **kwargs):
     flags = kwargs['flags'] if 'flags' in kwargs else {}
 
     target = File(name)
@@ -40,7 +40,7 @@ def infi_application_method(env, name, sources, **kwargs):
     return env.Program(target, sources, **flags)
 
 # Custom method to build a Infi library.
-def infi_library_method(env, name, sources, **kwargs):
+def pulsar_library_method(env, name, sources, **kwargs):
     manager = env['_MANAGER']
 
     build_libraries = kwargs['build_libraries'] if 'build_libraries' in kwargs else []
@@ -60,5 +60,3 @@ def infi_library_method(env, name, sources, **kwargs):
 
     # Build the library.
     return env.SharedLibrary(target, sources, **flags)
-
-#EOF

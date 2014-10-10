@@ -178,7 +178,7 @@ env.Command(
 arch_sources = SConscript(dirs = ['arch/' + config['ARCH']], exports = ['env'])
 
 # Build the library from this.
-env.InfiLibrary('system',
+env.PulsarLibrary('system',
     sources = arch_sources + sources,
     build_libraries = ['kernel'],
     include_paths = [

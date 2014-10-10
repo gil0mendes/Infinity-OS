@@ -22,6 +22,6 @@
 Import('manager')
 
 env = manager.Create(libraries = ['kernel'])
-env.InfiApplication('shutdown', [
+env.PulsarApplication('shutdown', [
 	'main.c'
 ])

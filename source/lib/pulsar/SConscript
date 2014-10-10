@@ -39,7 +39,7 @@ sources = map(File, [
 ])
 
 # Build the library from this
-env.InfiLibrary('pulsar',
+env.PulsarLibrary('pulsar',
 	sources = sources,
 	build_libraries = ['kernel']
 )

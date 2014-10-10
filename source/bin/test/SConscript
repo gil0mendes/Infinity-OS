@@ -17,6 +17,6 @@
 Import('manager')
 
 env = manager.Create(libraries = ['kernel'])
-env.InfiApplication('test-event', ['test-event.c'])
-env.InfiApplication('test-ipc', ['test-ipc.c'])
-env.InfiApplication('test-threads', ['test-threads.cc'])
+env.PulsarApplication('test-event', ['test-event.c'])
+env.PulsarApplication('test-ipc', ['test-ipc.c'])
+env.PulsarApplication('test-threads', ['test-threads.cc'])

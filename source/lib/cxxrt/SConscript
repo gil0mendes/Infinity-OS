@@ -30,7 +30,7 @@ env = manager.Create(libraries = ['system'], flags = {
 
 libunwind_objects = SConscript(dirs = ['unwind'], exports = ['env'])
 
-env.InfiLibrary('cxxrt',
+env.PulsarLibrary('cxxrt',
     sources = libunwind_objects + [
         'src/dynamic_cast.cc',
         'src/exception.cc',

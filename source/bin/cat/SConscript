@@ -17,4 +17,4 @@
 Import('manager')
 
 env = manager.Create(libraries = ['kernel'])
-env.InfiApplication('cat', ['main.c'])
+env.PulsarApplication('cat', ['main.c'])

@@ -47,7 +47,7 @@ sources = SourceList()
 SConscript(dirs = ['arch/%s' % (config['ARCH']), 'generic', 'support'], exports = ['env', 'sources'])
 
 # Build the library.
-env.InfiLibrary('m',
+env.PulsarLibrary('m',
 	sources = sources.files(),
     include_paths = [Dir('include')],
 )

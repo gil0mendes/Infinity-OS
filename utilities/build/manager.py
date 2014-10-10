@@ -199,8 +199,8 @@ class BuildManager:
 		env.Append(PROGEMITTER = [add_library_deps])
 
 		# Add the application/library builders.
-		env.AddMethod(builders.infi_application_method, 'InfiApplication')
-		env.AddMethod(builders.infi_library_method, 'InfiLibrary')
+		env.AddMethod(builders.pulsar_application_method, 'PulsarApplication')
+		env.AddMethod(builders.pulsar_library_method, 'PulsarLibrary')
 
 		self.envs.append((name, env))
 		return env

@@ -67,7 +67,7 @@ env.Command(
 # Get a list of architecture-specific source files.
 arch_sources = SConscript(dirs = ['arch/%s' % (config['ARCH'])], exports = ['env'])
 
-env.InfiLibrary('kernel',
+env.PulsarLibrary('kernel',
     sources = arch_sources + sources,
     include_paths = [Dir('include')],
 )

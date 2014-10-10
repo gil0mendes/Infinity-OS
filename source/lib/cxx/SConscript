@@ -31,7 +31,7 @@ env = manager.Create(
     },
 )
 
-env.InfiLibrary('c++',
+env.PulsarLibrary('c++',
     sources = [
         'src/algorithm.cpp',
         'src/bind.cpp',

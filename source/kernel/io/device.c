@@ -157,8 +157,9 @@ status_t device_create(const char *name, device_t *parent, device_ops_t *ops,
 	assert(parent);
 	assert(!parent->dest);
 
+	/* TODO: Check if this is necessery (probably not)
 	if(ops)
-		assert(ops->type == FILE_TYPE_BLOCK || ops->type == FILE_TYPE_CHAR);
+		assert(ops->type == FILE_TYPE_BLOCK || ops->type == FILE_TYPE_CHAR);*/
 
 	/* Check if a child already exists with this name. */
 	mutex_lock(&parent->lock);

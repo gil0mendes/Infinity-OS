@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 Gil Mendes
+# Copyright (C) 2014 Gil Mendes
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -16,17 +16,14 @@
 
 Import('manager')
 
-# Set the library output directory.
-manager.AddVariable('_LIBOUTDIR', Dir('.'))
+env = manager['module']
 
-dirs = [
-  'crt',
-  'kernel',
-  'system',
-  'libm',
-  'cxxrt',
-  'cxx',
-	'pulsar',
+# Add import directory
+env['CPPPATH'].append(Dir('include'))
+
+# Module directories
+subdirs = [
+	'input'
 ]
 
-SConscript(dirs = dirs)
+SConscript(dirs = subdirs, exports = ['env'])

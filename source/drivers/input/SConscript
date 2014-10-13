@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 Gil Mendes
+# Copyright (C) 2014 Gil Mendes
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,17 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-Import('manager')
+Import('env', 'config')
 
-# Set the library output directory.
-manager.AddVariable('_LIBOUTDIR', Dir('.'))
+# Make module exporting 
+env['CCFLAGS'] += ['-fvisibility=default']
 
+# Build the Input device manager.
+env.Module('input', ['input.c'])
+
+# Work out the drivers to build
 dirs = [
-  'crt',
-  'kernel',
-  'system',
-  'libm',
-  'cxxrt',
-  'cxx',
-	'pulsar',
+	('DRIVER_INPUT_I8042', 'i8042')
 ]
 
-SConscript(dirs = dirs)
+SConscript(dirs=[d for (c, d) in dirs if not c or config[c]], exports=['env'])

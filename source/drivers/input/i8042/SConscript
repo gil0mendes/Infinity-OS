@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013 Gil Mendes
+# Copyright (C) 2014 Gil Mendes
 #
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -14,19 +14,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-Import('manager')
+Import('env')
 
-# Set the library output directory.
-manager.AddVariable('_LIBOUTDIR', Dir('.'))
-
-dirs = [
-  'crt',
-  'kernel',
-  'system',
-  'libm',
-  'cxxrt',
-  'cxx',
-	'pulsar',
-]
-
-SConscript(dirs = dirs)
+# Build module
+env.Module('i8042', ['i8042.c', 'keycodes.c'])

@@ -14,17 +14,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-Import('manager')
+Import('env', 'config')
 
-env = manager['module']
-
-# Add import directory
-env['CPPPATH'].append(Dir('include'))
-
-# Module directories
-subdirs = [
-	'bus',
-	'input'
+# Work out the modules to build
+dirs = [
+        ('DRIVER_BUS_PCI', 'pci')
 ]
 
-SConscript(dirs = subdirs, exports = ['env'])
+SConscript(dirs=[d for (c, d) in dirs if not c or config[c]], exports=['env'])

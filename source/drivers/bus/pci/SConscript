@@ -14,17 +14,14 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-Import('manager')
+Import('env', 'config')
 
-env = manager['module']
+# Make module exporting
+env['CCFLAGS'] += ['-fvisibility=default']
 
-# Add import directory
-env['CPPPATH'].append(Dir('include'))
+sources = map(File, [
+        'platform/%s.c' % (config['PLATFORM']),
+        'pci.c',
+])
 
-# Module directories
-subdirs = [
-	'bus',
-	'input'
-]
-
-SConscript(dirs = subdirs, exports = ['env'])
+env.Module('pci', sources)

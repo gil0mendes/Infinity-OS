@@ -19,6 +19,14 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+comment "Bus managers"
+
+config DRIVER_BUS_PCI
+	bool "PCI bus manager"
+	default y
+	help
+	  Enable the PCI bus manager driver.
+
 comment "Input devices"
 
 config DRIVER_INPUT_I8042

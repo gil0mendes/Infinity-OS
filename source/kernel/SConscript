@@ -167,30 +167,5 @@ env.Command(['kernel', 'kernel.lst', 'kernel.rde', 'kernel.sym'], 'kernel-unstri
 # Let the distribution environment know where the kernel is.
 manager['dist']['KERNEL'] = File('kernel')
 
-#############################
-# Module environment set-up #
-#############################
-
-# Create the module environment.
-env = manager.Clone(manager['kernel'], name = 'module', flags = {
-    # Modules default to not exporting symbols.
-    'CCFLAGS': ['-fno-common', '-fvisibility=hidden'],
-})
-
-dist = manager['dist']
-dist['MODULES'] = []
-
-# The emitter adds all modules to the distribution environment's module list.
-def module_emitter(target, source, env):
-    manager['dist']['MODULES'].append(target[0])
-    return target, source
-env['BUILDERS']['Module'] = Builder(
-    action = [
-        Action('$LD -r -o $TARGET $SOURCES', '$LINKCOMSTR'),
-        Action('$STRIP --strip-debug $TARGET', None),
-    ],
-    suffix = '.km',
-    src_suffix = '$OBJSUFFIX',
-    src_builder = 'Object',
-    emitter = module_emitter
-)
+# Build kernel modules
+SConscript(dirs = ['modules'])

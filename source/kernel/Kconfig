@@ -84,3 +84,5 @@ config IPC_DEBUG
 #######
 endmenu
 #######
+
+source "modules/Kconfig"

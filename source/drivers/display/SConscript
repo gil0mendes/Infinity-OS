@@ -14,18 +14,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-Import('manager')
+Import('env', 'config')
 
-env = manager['module']
+# Make module exporting
+env['CCFLAGS'] += ['-fvisibility=default']
 
-# Add import directory
-env['CPPPATH'].append(Dir('include'))
-
-# Module directories
-subdirs = [
-	'bus',
-	'input',
-	'display'
-]
-
-SConscript(dirs = subdirs, exports = ['env'])
+# Build the display manager
+env.Module('display', ['display.c'])

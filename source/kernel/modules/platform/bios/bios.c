@@ -414,7 +414,7 @@ bios_mem_map(ptr_t addr, phys_ptr_t phys, size_t size)
 
 	mmu_context_lock(&kernel_mmu_context);
 	for(i = 0; i < size; i += PAGE_SIZE) {
-		ret = mmu_context_map(&kernel_mmu_context, (ptr_t)bios_mem_mapping + addr + i,
+		mmu_context_map(&kernel_mmu_context, (ptr_t)bios_mem_mapping + addr + i,
 				phys + i, VM_ACCESS_READ | VM_ACCESS_WRITE | VM_ACCESS_EXECUTE, MM_WAIT);
 	}
 	mmu_context_unlock(&kernel_mmu_context);

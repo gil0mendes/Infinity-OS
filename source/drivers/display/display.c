@@ -263,7 +263,7 @@ display_device_map(device_t *_device, file_handle_t *handle, struct vm_region *r
 {
 	// TODO: Update this for the new device_ops_t version
 
-	kprintf(LOG_DEBUG, "D: %p, H: %p, V: %p\n", _device, handle, region);
+	kprintf(LOG_WARN, "D: %p, H: %p, V: %p\n", _device, handle, region);
 
 	/*display_device_t *device = _device->data;
 

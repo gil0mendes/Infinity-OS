@@ -27,6 +27,15 @@ config DRIVER_BUS_PCI
 	help
 	  Enable the PCI bus manager driver.
 
+comment "Display devices"
+
+config DRIVER_DISPLAY_VBE
+	bool "VBE display device driver"
+	default y
+	depends on MODULE_PLATFORM_BIOS
+	help
+	  Enable the VBE display device driver.
+
 comment "Input devices"
 
 config DRIVER_INPUT_I8042

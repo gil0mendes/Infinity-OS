@@ -201,6 +201,7 @@ class BuildManager:
 		# Add the application/library builders.
 		env.AddMethod(builders.pulsar_application_method, 'PulsarApplication')
 		env.AddMethod(builders.pulsar_library_method, 'PulsarLibrary')
+		env.AddMethod(builders.pulsar_service_method, 'PulsarService')
 
 		self.envs.append((name, env))
 		return env

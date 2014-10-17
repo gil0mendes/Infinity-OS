@@ -39,6 +39,18 @@ def pulsar_application_method(env, name, sources, **kwargs):
     # Build the application.
     return env.Program(target, sources, **flags)
 
+def pulsar_service_method(env, name, sources, **kwargs):
+  # Prepare extra args
+  flags = kwargs['flags'] if 'flags' in kwargs else {}
+
+  target = File(name)
+
+  # Add the service to the distribution environment
+  env['_MANAGER']['dist'].AddFile(target, 'system/services/%s' % (name))
+
+  # Build the service
+  return env.Program(target, sources, **flags)
+
 # Custom method to build a Infi library.
 def pulsar_library_method(env, name, sources, **kwargs):
     manager = env['_MANAGER']
